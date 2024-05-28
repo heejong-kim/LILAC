@@ -149,7 +149,7 @@ class CNNbasic2D(nn.Module):
         self.feature_image = (torch.tensor(inputsize) / (2**(n_of_blocks)))
         self.feature_channel = initial_channel
         self.encoder = Encoder2D(in_num_ch=channels, num_block=n_of_blocks, inter_num_ch=initial_channel, num_conv=num_conv, pooling=pooling)
-        self.linear = nn.Linear((self.feature_channel * (self.feature_image.prod())) + additional_feature, 1, bias=False)
+        self.linear = nn.Linear((self.feature_channel * (self.feature_image.prod()).type(torch.int).item()) + additional_feature, 1, bias=False)
 
     def forward(self, x):
         x = self.encode(x)
@@ -165,7 +165,7 @@ class CNNbasic3D(nn.Module):
         self.feature_image = (torch.tensor(inputsize) / (2**(n_of_blocks)))
         self.feature_channel = initial_channel
         self.encoder = Encoder3D(in_num_ch=channels, num_block=n_of_blocks, inter_num_ch=initial_channel, num_conv=num_conv, pooling=pooling)
-        self.linear = nn.Linear((self.feature_channel * (self.feature_image.prod())) + additional_feature, 1, bias=False)
+        self.linear = nn.Linear((self.feature_channel * (self.feature_image.prod()).type(torch.int).item()) + additional_feature, 1, bias=False)
 
     def forward(self, x):
         x = self.encode(x)
@@ -181,34 +181,34 @@ def get_backbone(args=None):
     backbone_name = args.backbone_name
     if backbone_name == 'cnn_3D':
         backbone = CNNbasic3D(inputsize=args.image_size, channels=args.image_channel, additional_feature = n_of_meta)
-        mlp = backbone.linear
+        linear = backbone.linear
         backbone.linear = nn.Identity()
     elif backbone_name == 'cnn_2D':
         backbone = CNNbasic2D(inputsize=args.image_size, channels=args.image_channel, additional_feature = n_of_meta)
-        mlp = backbone.linear
+        linear = backbone.linear
         backbone.linear = nn.Identity()
     elif backbone_name == 'resnet50_2D':
         backbone = resnet50()
         if args.image_channel != 3:
             backbone.conv1 = nn.Conv2d(args.image_channel, 64, 7, 2, 3, bias=False)
-        mlp = nn.Linear(2048 + n_of_meta, 1, bias=False)
+        linear = nn.Linear(2048 + n_of_meta, 1, bias=False)
         backbone.fc = nn.Identity()
 
     elif backbone_name == 'resnet18_2D':
         backbone = resnet18()
         if args.image_channel != 3:
             backbone.conv1 = nn.Conv2d(args.image_channel, 64, 7, 2, 3, bias=False)
-        mlp = nn.Linear(512 + n_of_meta, 1, bias=False)
+        linear = nn.Linear(512 + n_of_meta, 1, bias=False)
         backbone.fc = nn.Identity()
     else:
         raise NotImplementedError(f"{args.backbone_name} not implemented yet")
 
-    return backbone, mlp
+    return backbone, linear
 
 class LILAC(nn.Module):
     def __init__(self, args):
         super().__init__()
-        self.backbone, self.mlp = get_backbone(args)
+        self.backbone, self.linear = get_backbone(args)
 
     def forward(self, x1, x2, meta=None):
         f = self.backbone(x1) - self.backbone(x2)
@@ -217,5 +217,5 @@ class LILAC(nn.Module):
             m = m1 - m2
             f = torch.concat((f, m), 1)
 
-        return self.mlp(self.backbone(f))
+        return self.linear(self.backbone(f))
 

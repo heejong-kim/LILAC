@@ -646,7 +646,7 @@ def parse_args():
                                                                      "m: regression with optional meta for a specific target variable\n ")
     parser.add_argument('--targetname', default='age', type=str)
     parser.add_argument('--optional_meta', default=[], type=list, help='list optional meta names to be used. csv files should include the meta data')
-    parser.add_argument('--modelname', default='cnn_3D', type=str,
+    parser.add_argument('--backbone_name', default='cnn_3D', type=str,
                         help="implemented models: cnn_3D, cnn_2D, resnet50_2D, resnet18_2D")
 
     parser.add_argument('--run_mode', default='train', choices=['train', 'eval'], help="select mode") #  required=True,
@@ -666,10 +666,10 @@ def run_setup(args):
 
     if args.optional_meta == []:
         path_pref = args.jobname + '-' + dict_task[args.task_option] + '-' + \
-                    'model' + args.backbone_name + '-lr' + str(args.lr) + '-seed' + str(args.seed) + '-batch' + str(args.batchsize)
+                    'backbone_' + args.backbone_name + '-lr' + str(args.lr) + '-seed' + str(args.seed) + '-batch' + str(args.batchsize)
     else:
         path_pref = args.jobname + '-' + dict_task[args.task_option] + '-' + 'meta' + '_'.join(args.optional_meta) + \
-                    'model' + args.backbone_name + '-lr' + str(args.lr) + '-seed' + str(args.seed) + '-batch' + str(args.batchsize)
+                    'backbone_' + args.backbone_name + '-lr' + str(args.lr) + '-seed' + str(args.seed) + '-batch' + str(args.batchsize)
 
     args.output_fullname = os.path.join(args.output_directory, path_pref)
     os.makedirs(args.output_fullname, exist_ok=True)
@@ -692,6 +692,12 @@ def run_setup(args):
     image_size = [int(item) for item in args.image_size.split(',')]
     args.image_size = image_size
 
+    if len(args.image_size) == 2:
+        args.loader = loader2D(args)
+    elif len(args.image_size) == 3:
+        args.loader = loader3D(args)
+    else:
+        raise NotImplementedError
 
 if __name__ == "__main__":
 
@@ -701,25 +707,53 @@ if __name__ == "__main__":
     run_setup(args)
 
     ## embryo
+    args.batchsize = 64;
+    args.max_epoch = 40;
+    args.num_workers = 8;
+    args.targetname = 'phaseidx';
+    args.optional_meta = []
+    args.lr = 0.001;
+    args.backbone_name = 'cnn_2D';
+    args.save_epoch_num = 1;
+    args.task_option = 'o'
+    args.output_directory = 'output'
+    args.jobname = 'embryo'
+    args.image_directory = '/scratch/datasets/hk672/embryo';
+    args.image_size = "224, 224"
+    args.csv_file_train = '/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/demo_embryo_train.csv'
+    args.csv_file_val = '/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/demo_embryo_val.csv'
+    args.csv_file_test = '/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/demo_embryo_test.csv'
+
+    import pandas as pd
+    demo_all = pd.read_csv('/scratch/datasets/hk672/embryo/demo.csv', index_col=0)
+    demo_all['subject'] = demo_all.embryoname
+    demo_all = demo_all.drop(columns = ['embryoname','embryoidx',  'imagename-fullpath', 'resizefailed'])
+    # 'phase', 'phaseidx', target
+    demo_train = demo_all[demo_all.trainvaltest == 'train'].reset_index(drop=True).drop(columns = [ 'trainvaltest'])
+    demo_val = demo_all[demo_all.trainvaltest == 'val'].reset_index(drop=True).drop(columns = ['trainvaltest'])
+    demo_test = demo_all[demo_all.trainvaltest == 'test'].reset_index(drop=True).drop(columns = ['trainvaltest'])
+    out_dir = '/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release'
+    demo_train.to_csv(os.path.join(out_dir, 'demo_embryo_train.csv'))
+    demo_val.to_csv(os.path.join(out_dir, 'demo_embryo_val.csv'))
+    demo_test.to_csv(os.path.join(out_dir, 'demo_embryo_test.csv'))
 
     ## woundhealing
     args.batchsize = 128;
     args.max_epoch = 40;
     args.num_workers = 8;
     args.targetname = 'timepoint';
-    args.dataname = 'woundhealing';
+    args.optional_meta = []
     args.lr = 0.001;
     args.backbone_name = 'cnn_2D';
     args.save_epoch_num = 1;
-    args.n_of_blocks = 4;
     args.task_option = 'o'
     args.output_directory = 'output'
     args.jobname = 'woundhealing'
     args.image_directory = '/scratch/datasets/hk672/woundhealing/data_preprocessed';
     args.image_size = "224, 224"
-    args.csv_file_train = '/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/demo_oasis_train.csv'
-    args.csv_file_val = '/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/demo_oasis_val.csv'
-    args.csv_file_test = '/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/demo_oasis_test.csv'
+    args.csv_file_train = '/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/demo_woundhealing_train.csv'
+    args.csv_file_val = '/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/demo_woundhealing_val.csv'
+    args.csv_file_test = '/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/demo_woundhealing_test.csv'
 
     import pandas as pd
     demo_all = pd.read_csv('/scratch/datasets/hk672/woundhealing/demo/demo.csv', index_col=0)
@@ -728,20 +762,49 @@ if __name__ == "__main__":
     demo_val = demo_all[demo_all.trainvaltest == 'val'].reset_index(drop=True).drop(columns = ['trainvaltest'])
     demo_test = demo_all[demo_all.trainvaltest == 'test'].reset_index(drop=True).drop(columns = ['trainvaltest'])
     out_dir = '/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release'
-    demo_train.to_csv(os.path.join(out_dir, 'demo_oasis_train.csv'))
-    demo_val.to_csv(os.path.join(out_dir, 'demo_oasis_val.csv'))
-    demo_test.to_csv(os.path.join(out_dir, 'demo_oasis_test.csv'))
+    demo_train.to_csv(os.path.join(out_dir, 'demo_woundhealing_train.csv'))
+    demo_val.to_csv(os.path.join(out_dir, 'demo_woundhealing_val.csv'))
+    demo_test.to_csv(os.path.join(out_dir, 'demo_woundhealing_test.csv'))
+
+    ## oasis aging "oasis-aging"
+    args.batchsize = 16
+    args.max_epoch = 1
+    args.num_workers = 8
+    args.lr = 0.001
+    args.backbone_name = 'cnn_3D'
+    args.image_directory = '/share/sablab/nfs04/data/OASIS3/npp-preprocessed/image'
+    args.task_option = 't' # TODO loader check time interval
+    args.output_directory = 'output'
+    args.optional_meta = []
+    args.jobname = 'oasis-aging'
+    args.targetname = 'age'
+    args.image_channel = 1
+    args.image_size = "128, 128, 128"
+    args.csv_file_train = '/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/demo_oasis-aging_train.csv'
+    args.csv_file_val = '/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/demo_oasis-aging_val.csv'
+    args.csv_file_test = '/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/demo_oasis-aging_test.csv'
+
+    import pandas as pd
+    demo_all_old = pd.read_csv('/share/sablab/nfs04/data/OASIS3/demo/demo-healthy-longitudinal-3D-preprocessed.csv', index_col=0)
+    demo_all = pd.DataFrame()
+    demo_all['subject'] = demo_all_old['subject-id']
+    demo_all['age'] = demo_all_old['age']
+    demo_all['fname'] = demo_all_old['fname']
+    demo_all['trainvaltest'] = demo_all_old['trainvaltest']
+
+    demo_train = demo_all[demo_all.trainvaltest == 'train'].reset_index(drop=True).drop(columns = ['trainvaltest'])
+    demo_val = demo_all[demo_all.trainvaltest == 'val'].reset_index(drop=True).drop(columns = ['trainvaltest'])
+    demo_test = demo_all[demo_all.trainvaltest == 'test'].reset_index(drop=True).drop(columns = ['trainvaltest'])
+    out_dir = '/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release'
+    demo_train.to_csv(os.path.join(out_dir, 'demo_oasis-aging_train.csv'))
+    demo_val.to_csv(os.path.join(out_dir, 'demo_oasis-aging_val.csv'))
+    demo_test.to_csv(os.path.join(out_dir, 'demo_oasis-aging_test.csv'))
 
 
-
-    ## oasis aging
-
-    ## mci w/ meta
-
+    ## mci w/ meta "adni-mci"
     model = LILAC(args)
     print("Num of Model Parameter:", count_parameters(model))
-
-    loader =
+    loader = args.loader
 
 
     if args.run_mode == 'eval':

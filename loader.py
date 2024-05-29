@@ -10,39 +10,71 @@ import torchio as tio
 import nibabel as nib
 from utils import *
 
-dict_transform = {}
+dict_transform = {'embryo': transforms.Compose([
+    transforms.RandomApply(torch.nn.ModuleList(
+        [transforms.RandomAffine(degrees=(-10, 10), translate=(0.05, 0.05),
+                                 interpolation=InterpolationMode.BILINEAR)]),
+        p=0.5),
+]),
+    'woundhealing': transforms.Compose([transforms.RandomApply(
+        torch.nn.ModuleList([transforms.RandomAffine(degrees=(-5, 5), translate=(0.01, 0.01),
+                                                     interpolation=InterpolationMode.BILINEAR),
+                             transforms.RandomHorizontalFlip(p=1),
+                             transforms.RandomVerticalFlip(p=1)]), p=0.5)
+
+
+    ])}
+
 
 class loader2D(Dataset):
-    def __init__(self, root='/share/sablab/nfs04//data/embryo/', transform=None, trainvaltest='train', opt = None):
+    def __init__(self, args):
 
-        self.trainvaltest = trainvaltest
-        self.imgdir = os.path.join(root)
+        if args.run_mode == 'train':
+            self.demo = pd.read_csv(args.csv_file_train, index_col=0)
+            self.augmentation = True
+            assert set(['fname', 'subject', args.targetname]).issubset(
+                set(list(self.demo.columns))), f"Check input csv file column names"
+        elif args.run_mode == 'val':
+            self.demo = pd.read_csv(args.csv_file_val, index_col=0)
+            self.augmentation = False
+            assert set(['fname', 'subject', args.targetname]).issubset(
+                set(list(self.demo.columns))), f"Check input csv file column names"
+        else:
+            self.demo = pd.read_csv(args.csv_file_test, index_col=0)
+            self.augmentation = False
+            assert set(['fname', 'subject', args.targetname]).issubset(
+                set(list(self.demo.columns))), f"Check input csv file column names"
 
-        meta = pd.read_csv(os.path.join(root, 'demo.csv'), index_col=0)
-
-        num_of_subjects = len(np.unique(meta['embryoname']))
-        meta = meta[meta.trainvaltest == trainvaltest].reset_index()
-        IDunq = np.unique(meta['embryoname'])
+        # image directory
+        IDunq = np.unique(self.demo['subject'])
         index_combination = np.empty((0, 2))
         for sid in IDunq:
-            indices = np.where(meta['embryoname'] == sid)[0]
+            indices = np.where(self.demo['subject'] == sid)[0]
             ### all possible pairs
             tmp_combination = np.array(
                 np.meshgrid(np.array(range(len(indices))), np.array(range(len(indices))))).T.reshape(-1, 2)
             index_combination = np.append(index_combination, indices[tmp_combination], 0)
 
-
-        img_height, img_width = opt.image_size
-        self.targetname = opt.targetname
+        img_height, img_width = args.image_size
+        self.targetname = args.targetname
+        self.imgdir = args.image_directory
 
         self.resize = transforms.Compose([
             transforms.Resize((img_height, img_width), InterpolationMode.BILINEAR),
             transforms.ToTensor(),
         ])
-
         self.index_combination = index_combination
-        self.transform = transform
-        self.demo = meta
+
+        if self.augmentation:
+            if args.jobname in dict_transform.keys():
+                self.transform = dict_transform[args.jobname]
+            else:
+                self.transform = transforms.Compose([
+                    transforms.RandomApply(torch.nn.ModuleList(
+                        [transforms.RandomAffine(degrees=(-10, 10), translate=(0.05, 0.05),
+                                                 interpolation=InterpolationMode.BILINEAR)]),
+                        p=0.5),
+                ])
 
     def __getitem__(self, index):
         index1, index2 = self.index_combination[index]
@@ -53,16 +85,9 @@ class loader2D(Dataset):
         img2 = Image.open(os.path.join(self.imgdir, self.demo.fname[index2]))
         img2 = self.resize(img2)  # to tensor
 
-        if self.transform:
-            augmentation = transforms.Compose([
-                transforms.RandomApply(torch.nn.ModuleList(
-                    [transforms.RandomAffine(degrees=(-10, 10), translate=(0.05,0.05),
-                                             interpolation=InterpolationMode.BILINEAR)]),
-                    p=0.5),
-            ])
-
-            img1 = augmentation(img1)
-            img2 = augmentation(img2)
+        if self.augmentation:
+            img1 = self.transform(img1)
+            img2 = self.transform(img2)
 
         return [np.array(img1), target1], [np.array(img2), target2]
 
@@ -73,92 +98,55 @@ class loader2D(Dataset):
 class loader3D(Dataset):
     def __init__(self, args):
 
-         # root='/share/sablab/nfs04/data/ADNI_mci/', transform=None,
-         # trainvaltest='train',opt=None, easy2hard_thr=0, positive_pairs_only=False):
+        if args.run_mode == 'train':
+            self.demo = pd.read_csv(args.csv_file_train, index_col=0)
+            self.augmentation = True
+            assert set(['fname', 'subject', args.targetname]).issubset(
+                set(list(self.demo.columns))), f"Check input csv file column names"
+        elif args.run_mode == 'val':
+            self.demo = pd.read_csv(args.csv_file_val, index_col=0)
+            self.augmentation = False
 
-        self.trainvaltest = trainvaltest
-        self.imgdir = os.path.join(root, 'image/')
-        self.targetname = opt.targetname
-        self.transform = transform
-        self.deltaT = opt.deltaT
-        self.diffT = opt.diffT
-        self.diffMMSE = opt.diffMMSE
-        self.diffCDRSB = opt.diffCDRSB
-        self.diffTSEX = opt.diffTSEX
+            assert set(['fname', 'subject', args.targetname]).issubset(
+                set(list(self.demo.columns))), f"Check input csv file column names"
+        else:
+            self.demo = pd.read_csv(args.csv_file_test, index_col=0)
+            self.augmentation = False
+            assert set(['fname', 'subject', args.targetname]).issubset(
+                set(list(self.demo.columns))), f"Check input csv file column names"
 
-        self.sex = opt.SEX
-        self.easy2hard_thr = easy2hard_thr
-        self.positive_pairs_only = positive_pairs_only
-        self.baseage = opt.baseAGE
+        self.jobname = args.jobname
+        # Filter NaN values
+        nan_indices = [np.where(np.isnan(self.demo[k]))[0] for k in [args.targetname] + args.optional_meta]
+        if len(nan_indices)>0:
+            self.demo = self.demo.drop(index = nan_indices).reset_index(drop=True)
 
-        # Preprocessed (using NPP)
-        meta = pd.read_csv(os.path.join(root, 'demo', 'ADNIMERGE_MCI_long_dx_conversion.csv'), index_col=0,
-                           low_memory=False)
-        meta = meta[meta.trainvaltest == trainvaltest].reset_index(drop=True)
-        # Sort demo
-        meta = meta.sort_values(by=['PTID', 'Month']).reset_index(drop=True)
-        IDunq = np.unique(meta['PTID'])
+        # image directory
+        IDunq = np.unique(self.demo['subject'])
         index_combination = np.empty((0, 2))
-
-        # target 'nan' filter
-        meta = meta[~np.isnan(meta[opt.targetname])].reset_index(drop=True)
-        if self.diffMMSE:
-            meta = meta[~np.isnan(meta['MMSE'])].reset_index(drop=True)
-        if self.diffCDRSB:
-            meta = meta[~np.isnan(meta['CDRSB'])].reset_index(drop=True)
-
         for sid in IDunq:
-            indices = np.where(meta['PTID'] == sid)[0]
+            indices = np.where(self.demo['subject'] == sid)[0]
             ### all possible pairs
             tmp_combination = np.array(
                 np.meshgrid(np.array(range(len(indices))), np.array(range(len(indices))))).T.reshape(-1, 2)
             index_combination = np.append(index_combination, indices[tmp_combination], 0)
 
-        # only one direction.
-        if self.positive_pairs_only:
-            index_combination = (index_combination[(index_combination[:, 1] - index_combination[:, 0]) > 0]).astype('int')
+        self.image_size = args.image_size
+        # TODO self.fnames = np.array('I' + meta.IMAGEUID.astype('int').astype('str') + '_mni_norm.nii.gz')
 
-        if trainvaltest == 'train':
-            target1 = meta.DX.iloc[index_combination[:, 0]]
-            target2 = meta.DX.iloc[index_combination[:, 1]]
-            targetdiff = np.array(target1) != np.array(target2) # NOTE: without these pairs its still odd and will output .6
-            index_append = index_combination[np.where(targetdiff)[0], :]
-            index_combination = np.append(index_combination, index_append, 0)
-            index_combination = np.append(index_combination, index_append, 0)
-            index_combination = np.append(index_combination, index_append, 0)
-
-            # -- confirm that the pairs are temporally ordered
-            # month = np.array(meta.Month)
-            # assert np.sum((month[index_combination[:, 1]] - month[index_combination[:, 0]]) >= 0) == len(index_combination), "Subject ID and Month order invalid. Check Demo"
-
-            month_diff = np.array(meta.M[index_combination[:, 1]]) - np.array(meta.M[index_combination[:, 0]])
-
-            if self.easy2hard_thr>0:
-                month_bool = np.abs(month_diff) > self.easy2hard_thr
-                index_combination = index_combination[month_bool, :]
-                print(f'Easy2hard: time difference threshold {self.easy2hard_thr}')
-
+        self.targetname = args.targetname
+        self.imgdir = args.image_directory
         self.index_combination = index_combination
-        self.demo = meta
-        self.image_size = opt.image_size
-        self.fnames = np.array('I'+meta.IMAGEUID.astype('int').astype('str') + '_mni_norm.nii.gz')
+
+        if len(args.optional_meta)>0:
+            self.optional_meta = True
 
     def __getitem__(self, index):
         index1, index2 = self.index_combination[index]
         target1, target2 = self.demo[self.targetname][index1], self.demo[self.targetname][index2]
-        age1, age2 = self.demo['age'][index1], self.demo['age'][index2]
 
-        if self.deltaT or self.diffT:
-            score1, score2 = self.demo.Month[index1], self.demo.Month[index2] # todo: note: anyhow the delta will be used ("Age" in this demo is unreliable) : update: "age" is fine.
-        if self.diffMMSE:
-            score1, score2 = self.demo.MMSE[index1], self.demo.MMSE[index2]
-        if self.diffCDRSB:
-            score1, score2 = self.demo.CDRSB[index1], self.demo.CDRSB[index2]
-        if self.sex:
-            sex = np.array(self.demo.PTGENDER[index1] == 'Male').astype(int)
-        if self.diffTSEX:
-            sex_month = (np.array(self.demo.PTGENDER == 'Male').astype("int") * self.demo.Month)
-            score1, score2 = sex_month[index1], sex_month[index2]
+        # TODO meta concatenate
+        age1, age2 = self.demo['age'][index1], self.demo['age'][index2]
 
         fname1 = os.path.join(self.imgdir, self.fnames[int(index1)])
         fname2 = os.path.join(self.imgdir, self.fnames[int(index2)])
@@ -170,20 +158,21 @@ class loader3D(Dataset):
         image1 = resize(image1)
         image2 = resize(image2)
 
-        if self.transform:
-            # pairwise transform
+        if self.augmentation:
             pairwise_transform_list = []
             imagewise_transform_list = []
 
             if np.random.randint(0, 2):
-                if np.random.randint(0, 2):
-                    affine_degree = tuple(np.random.uniform(low=-40, high=40, size=3))
-                    affine_translate = tuple(np.random.uniform(low=-10, high=10, size=3))
-                    pairwise_transform_list.append(tio.Affine(scales=(1, 1, 1),
-                                                              degrees=affine_degree,
-                                                              translation=affine_translate,
-                                                              image_interpolation='linear',
-                                                              default_pad_value='minimum'))
+
+                if not self.jobname == 'oasis-aging':# oasis-aging dataset w/o affine transform
+                    if np.random.randint(0, 2):
+                        affine_degree = tuple(np.random.uniform(low=-40, high=40, size=3))
+                        affine_translate = tuple(np.random.uniform(low=-10, high=10, size=3))
+                        pairwise_transform_list.append(tio.Affine(scales=(1, 1, 1),
+                                                                  degrees=affine_degree,
+                                                                  translation=affine_translate,
+                                                                  image_interpolation='linear',
+                                                                  default_pad_value='minimum'))
 
                 if np.random.randint(0, 2):
                     pairwise_transform_list.append(tio.Flip(axes=('LR',)))
@@ -196,9 +185,6 @@ class loader3D(Dataset):
 
             if np.random.randint(0, 2):
                 imagewise_transform_list.append(tio.RandomBlur(2))
-
-            # if np.random.randint(0, 2):
-            #     imagewise_transform_list.append(tio.RandomSwap())
 
             if len(pairwise_transform_list) > 0:
                 pairwise_augmentation = tio.Compose(pairwise_transform_list)
@@ -213,32 +199,16 @@ class loader3D(Dataset):
         image1 = image1.numpy().astype('float')
         image2 = image2.numpy().astype('float')
 
-        if self.deltaT or self.diffT or self.diffMMSE or self.diffCDRSB or self.diffTSEX:
+        if self.optional_meta:
+            return [image1, target1, meta1], \
+                   [image2, target2, meta2]
 
-            if self.baseage:
-                return [image1, target1, score1, age1], \
-                       [image2, target2, score2, age2]
-
-            elif self.sex:
-                return [image1, target1, score1, sex], \
-                       [image2, target2, score2, sex]
-
-            else:
-                return [image1, target1, score1], \
-                       [image2, target2, score2]
         else:
+            return [image1, target1], \
+                   [image2, target2]
 
-            if self.baseage:
-                return [image1, target1, age1], \
-                       [image2, target2, age2]
-
-            elif self.sex:
-                return [image1, target1, sex], \
-                    [image2, target2, sex]
-
-            else:
-                return [image1, target1], \
-                       [image2, target2]
 
     def __len__(self):
         return len(self.index_combination)
+
+

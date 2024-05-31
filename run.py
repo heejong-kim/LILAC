@@ -310,7 +310,7 @@ def parse_args():
                                        "t: regression for ''t''ime interval\n "
                                        "s: regression with optional meta for a ''s''pecific target variable\n ")
     parser.add_argument('--targetname', default='age', type=str)
-    parser.add_argument('--optional_meta', default=[], type=list,
+    parser.add_argument('--optional_meta', default='', type=list,
                         help='list optional meta names to be used. csv files should include the meta data')
     parser.add_argument('--backbone_name', default='cnn_3D', type=str,
                         help="implemented models: cnn_3D, cnn_2D, resnet50_2D, resnet18_2D")

@@ -117,8 +117,8 @@ class loader3D(Dataset):
 
         self.jobname = args.jobname
         # Filter NaN values
-        nan_indices = [np.where(np.isnan(self.demo[k]))[0] for k in [args.targetname] + args.optional_meta]
-        if len(nan_indices)>0:
+        nan_indices = np.concatenate([np.where(np.isnan(self.demo[k]))[0] for k in [args.targetname] + args.optional_meta])
+        if nan_indices.size>0:
             self.demo = self.demo.drop(index = nan_indices).reset_index(drop=True)
 
         # image directory
@@ -140,13 +140,13 @@ class loader3D(Dataset):
 
         if len(args.optional_meta)>0:
             self.optional_meta = True
+            self.optional_meta = np.array(self.demo[args.optional_meta]) # test  + args.optional_meta
 
     def __getitem__(self, index):
-        index1, index2 = self.index_combination[index]
+        index1, index2 = self.index_combination[index].astype('int')
         target1, target2 = self.demo[self.targetname][index1], self.demo[self.targetname][index2]
 
-        # TODO meta concatenate
-        age1, age2 = self.demo['age'][index1], self.demo['age'][index2]
+        meta1, meta2 = self.optional_meta[index1, :], self.optional_meta[index2, :]
 
         fname1 = os.path.join(self.imgdir, self.fnames[int(index1)])
         fname2 = os.path.join(self.imgdir, self.fnames[int(index2)])
@@ -206,7 +206,6 @@ class loader3D(Dataset):
         else:
             return [image1, target1], \
                    [image2, target2]
-
 
     def __len__(self):
         return len(self.index_combination)

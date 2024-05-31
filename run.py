@@ -382,7 +382,7 @@ if __name__ == "__main__":
     run_setup(args)
     print(args)
 
-    # TODO input optional meta part fix 
+    # TODO input optional meta part fix
     # python run.py --jobname='embryo' --batchsize=64 --max_epoch=1 --targetname='phaseidx' --backbone_name='cnn_2D' --task_option='o' --output_directory='output' --image_directory='/scratch/datasets/hk672/embryo' --image_size='224,224' --csv_file_train='/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/demo_embryo_train.csv' --csv_file_val='/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/demo_embryo_val.csv' --csv_file_test='/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/demo_embryo_test.csv'
 
     '''

@@ -217,5 +217,5 @@ class LILAC(nn.Module):
             m = m1 - m2
             f = torch.concat((f, m), 1)
 
-        return self.linear(self.backbone(f))
+        return self.linear(f)
 

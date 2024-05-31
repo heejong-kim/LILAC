@@ -24,9 +24,9 @@ def train(network, opt):
     if parallel:
         network = nn.DataParallel(network).to(device)
 
-    if opt.epoch > 0 :
-        if len(glob.glob(f"{opt.output_fullname}/epoch{opt.epoch-1}*.pth"))>0:
-            lastpointname = glob.glob(f"{opt.output_fullname}/epoch{opt.epoch-1}*.pth")[0]
+    if opt.epoch > 0:
+        if len(glob.glob(f"{opt.output_fullname}/epoch{opt.epoch - 1}*.pth")) > 0:
+            lastpointname = glob.glob(f"{opt.output_fullname}/epoch{opt.epoch - 1}*.pth")[0]
             network.load_state_dict(torch.load(lastpointname))
         else:
             bestepoch = np.loadtxt(os.path.join(f'' + opt.output_fullname, 'best.info'))
@@ -42,10 +42,12 @@ def train(network, opt):
     earlystoppingcount = 0
 
     loader_train = torch.utils.data.DataLoader(args.train_loader,
-          batch_size=opt.batchsize, shuffle=True, num_workers=opt.num_workers, drop_last=True)
+                                               batch_size=opt.batchsize, shuffle=True, num_workers=opt.num_workers,
+                                               drop_last=True)
 
     loader_val = torch.utils.data.DataLoader(args.val_loader,
-        batch_size=opt.batchsize, shuffle=True, num_workers=opt.num_workers, drop_last=True)
+                                             batch_size=opt.batchsize, shuffle=True, num_workers=opt.num_workers,
+                                             drop_last=True)
 
     for epoch in range(opt.epoch, opt.max_epoch):
 
@@ -71,7 +73,11 @@ def train(network, opt):
                 input2, target2 = I2
                 predicted = network(input2.type(Tensor), input1.type(Tensor))
 
-            targetdiff = torch.tensor(target2-target1)[:, None].type(Tensor)
+            targetdiff = torch.tensor(target2 - target1)[:, None].type(Tensor)
+            if opt.task_option == 'o':
+                targetdiff[targetdiff > 0] = 1
+                targetdiff[targetdiff == 0] = 0.5
+                targetdiff[targetdiff < 0] = 0
 
             # Loss MSE
             optimizer.zero_grad()
@@ -100,7 +106,7 @@ def train(network, opt):
             )
             epoch_step_time.append(time.time() - step_start_time)
 
-        if ((epoch+1) % steps_per_epoch == 0):  # (step != 0) &
+        if ((epoch + 1) % steps_per_epoch == 0):  # (step != 0) &
             # print epoch info
             epoch_info = '\nValidating... Step %d/%d / Epoch %d/%d' % (
                 step, len(loader_train), epoch, opt.max_epoch)
@@ -127,6 +133,11 @@ def train(network, opt):
                         predicted = network(torch.cat([input2.type(Tensor), input1.type(Tensor)], 1))
 
                     targetdiff = torch.tensor(target2 - target1)[:, None].type(Tensor)
+                    if opt.task_option == 'o':
+                        targetdiff[targetdiff > 0] = 1
+                        targetdiff[targetdiff == 0] = 0.5
+                        targetdiff[targetdiff < 0] = 0
+
                     valloss = args.loss(predicted, targetdiff)
                     valloss_total.append(valloss.item())
 
@@ -149,10 +160,12 @@ def train(network, opt):
     torch.save(network.state_dict(), f"{opt.output_fullname}/model_epoch{epoch}.pth")
     network.eval()
 
+
 def test(network, loader, opt, overwrite=False):
     import sklearn.metrics as metrics
     from scipy.stats import pearsonr
     sigmoid = nn.Sigmoid()
+
     def rmse(a, b):
         return metrics.mean_squared_error(a, b, squared=False)
 
@@ -160,9 +173,9 @@ def test(network, loader, opt, overwrite=False):
 
     dict_metric = {'auc': metrics.roc_auc_score, 'pearson': pearsonr,
                    'rmse': rmse, 'loss': opt.loss}
-    dict_task_metrics = {'o': ['loss','auc'],
-                   't': ['loss','rmse'],
-                   's': ['loss','rmse']}
+    dict_task_metrics = {'o': ['loss', 'auc'],
+                         't': ['loss', 'rmse'],
+                         's': ['loss', 'rmse']}
 
     resultname = f'prediction-testset'
     run = False
@@ -199,7 +212,7 @@ def test(network, loader, opt, overwrite=False):
         network.eval()
 
         loader_test = torch.utils.data.DataLoader(args.loader_test,
-            batch_size=opt.batchsize, shuffle=False, num_workers=opt.num_workers)
+                                                  batch_size=opt.batchsize, shuffle=False, num_workers=opt.num_workers)
 
         tmp_stack_target = np.empty((0, 1))
         tmp_stack_predicted = np.empty((0, 1))
@@ -208,7 +221,8 @@ def test(network, loader, opt, overwrite=False):
 
         # moved this to test subjectid key problem
         result = pd.DataFrame()
-        result['subjectID'] = np.array(loader_test.dataset.demo[subjectid].iloc[loader_test.dataset.index_combination[:, 0]])
+        result['subjectID'] = np.array(
+            loader_test.dataset.demo[subjectid].iloc[loader_test.dataset.index_combination[:, 0]])
 
         for teststep, batch in enumerate(loader_test):
             sys.stdout.write(
@@ -232,11 +246,16 @@ def test(network, loader, opt, overwrite=False):
                 predicted = network(torch.cat([input2.type(Tensor), input1.type(Tensor)], 1))
 
             targetdiff = torch.tensor(target2 - target1)[:, None].type(Tensor)
+            if opt.task_option == 'o':
+                targetdiff[targetdiff > 0] = 1
+                targetdiff[targetdiff == 0] = 0.5
+                targetdiff[targetdiff < 0] = 0
+
             tmp_stack_predicted = np.append(tmp_stack_predicted,
-                                               np.array((predicted).cpu().detach()),
-                                               axis=0)
+                                            np.array((predicted).cpu().detach()),
+                                            axis=0)
             tmp_stack_target = np.append(tmp_stack_target,
-                                              targetdiff.cpu().detach(), axis=0)
+                                         targetdiff.cpu().detach(), axis=0)
             tmp_stack_target1 = np.append(tmp_stack_target1, np.array(target1)[:, None], axis=0)
             tmp_stack_target2 = np.append(tmp_stack_target2, np.array(target2)[:, None], axis=0)
 
@@ -259,6 +278,7 @@ def test(network, loader, opt, overwrite=False):
                 feature_diff = sigmoid(torch.tensor(feature_diff)).numpy()
 
             print(f'{dtm}:', dict_metric[dtm](target_diff, feature_diff))
+
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -287,15 +307,16 @@ def parse_args():
     parser.add_argument('--image_size', default="128, 128, 128", type=str, help="w,h for 2D and w,h,d for 3D")
     parser.add_argument('--image_channel', default=1, type=int)
     parser.add_argument('--task_option', default='o', choices=['o', 't', 's'],
-                                                                     type=str, help="o: temporal ''o''rdering\n "
-                                                                     "t: regression for ''t''ime interval\n "
-                                                                     "s: regression with optional meta for a ''s''pecific target variable\n ")
+                        type=str, help="o: temporal ''o''rdering\n "
+                                       "t: regression for ''t''ime interval\n "
+                                       "s: regression with optional meta for a ''s''pecific target variable\n ")
     parser.add_argument('--targetname', default='age', type=str)
-    parser.add_argument('--optional_meta', default=[], type=list, help='list optional meta names to be used. csv files should include the meta data')
+    parser.add_argument('--optional_meta', default=[], type=list,
+                        help='list optional meta names to be used. csv files should include the meta data')
     parser.add_argument('--backbone_name', default='cnn_3D', type=str,
                         help="implemented models: cnn_3D, cnn_2D, resnet50_2D, resnet18_2D")
 
-    parser.add_argument('--run_mode', default='train', choices=['train', 'eval'], help="select mode") #  required=True,
+    parser.add_argument('--run_mode', default='train', choices=['train', 'eval'], help="select mode")  # required=True,
 
     args = parser.parse_args()
 
@@ -304,18 +325,22 @@ def parse_args():
 
     return args
 
+
 def run_setup(args):
-    dict_loss= {'o': nn.BCELoss, 't':nn.MSELoss, 's':nn.MSELoss}
-    dict_task = {'o': 'temporal_ordering', 't':'regression', 's':'regression'}
+    dict_loss = {'o': nn.BCELoss, 't': nn.MSELoss, 's': nn.MSELoss}
+    dict_task = {'o': 'temporal_ordering', 't': 'regression', 's': 'regression'}
 
     args.loss = dict_loss[args.task_option]
 
     if args.optional_meta == []:
         path_pref = args.jobname + '-' + dict_task[args.task_option] + '-' + \
-                    'backbone_' + args.backbone_name + '-lr' + str(args.lr) + '-seed' + str(args.seed) + '-batch' + str(args.batchsize)
+                    'backbone_' + args.backbone_name + '-lr' + str(args.lr) + '-seed' + str(args.seed) + '-batch' + str(
+            args.batchsize)
     else:
-        path_pref = args.jobname + '-' + dict_task[args.task_option] + '-' + 'meta' + '_'.join(args.optional_meta) + '-'+\
-                    'backbone_' + args.backbone_name + '-lr' + str(args.lr) + '-seed' + str(args.seed) + '-batch' + str(args.batchsize)
+        path_pref = args.jobname + '-' + dict_task[args.task_option] + '-' + 'meta' + '_'.join(
+            args.optional_meta) + '-' + \
+                    'backbone_' + args.backbone_name + '-lr' + str(args.lr) + '-seed' + str(args.seed) + '-batch' + str(
+            args.batchsize)
 
     args.output_fullname = os.path.join(args.output_directory, path_pref)
     os.makedirs(args.output_fullname, exist_ok=True)
@@ -352,6 +377,7 @@ def run_setup(args):
             args.test_loader = loader3D(args, trainvaltest='test')
     else:
         raise NotImplementedError
+
 
 if __name__ == "__main__":
 
@@ -429,7 +455,7 @@ if __name__ == "__main__":
     args.lr = 0.001
     args.backbone_name = 'cnn_3D'
     args.image_directory = '/share/sablab/nfs04/data/OASIS3/npp-preprocessed/image'
-    args.task_option = 't' # TODO loader check time interval
+    args.task_option = 't'  # TODO loader check time interval
     args.output_directory = 'output'
     args.optional_meta = []
     args.jobname = 'oasis-aging'
@@ -456,7 +482,6 @@ if __name__ == "__main__":
     # demo_train.to_csv(os.path.join(out_dir, 'demo_oasis-aging_train.csv'))
     # demo_val.to_csv(os.path.join(out_dir, 'demo_oasis-aging_val.csv'))
     # demo_test.to_csv(os.path.join(out_dir, 'demo_oasis-aging_test.csv'))
-
 
     ## mci w/ meta "adni-mci"
     args.batchsize = 16
@@ -505,4 +530,3 @@ if __name__ == "__main__":
         assert args.run_mode == 'train', "check run_mode"
         print(' ----------------- Training initiated -----------------')
         train(model, args)
-

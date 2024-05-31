@@ -153,7 +153,7 @@ class CNNbasic2D(nn.Module):
 
     def forward(self, x):
         x = self.encoder(x)
-        x = x.view(x.shape[0], (self.feature_channel * (self.feature_image ** 2)))
+        x = x.view(x.shape[0], (self.feature_channel * (self.feature_image.prod()).type(torch.int).item()))
         y = self.linear(x)
         return y
 
@@ -169,7 +169,7 @@ class CNNbasic3D(nn.Module):
 
     def forward(self, x):
         x = self.encoder(x)
-        x = x.view(x.shape[0], (self.feature_channel * (self.feature_image ** 3)))
+        x = x.view(x.shape[0], (self.feature_channel * (self.feature_image.prod()).type(torch.int).item()))
         y = self.linear(x)
         return y
 

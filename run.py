@@ -11,9 +11,10 @@ import os
 import time
 import datetime
 import torch.nn as nn
-import copy
+import pandas as pd
 
-def train(network, loader, opt):
+
+def train(network, opt):
     cuda = True
     parallel = True
     device = torch.device(f"cuda:0" if torch.cuda.is_available() else "cpu")
@@ -40,12 +41,10 @@ def train(network, loader, opt):
     prev_val_loss = 1e+100
     earlystoppingcount = 0
 
-    loader_train = torch.utils.data.DataLoader(loader(args),
+    loader_train = torch.utils.data.DataLoader(args.train_loader,
           batch_size=opt.batchsize, shuffle=True, num_workers=opt.num_workers, drop_last=True)
 
-    args_val = copy.deepcopy(args)
-    args_val.run_mode = 'val'
-    loader_val = torch.utils.data.DataLoader(loader(args_val),
+    loader_val = torch.utils.data.DataLoader(args.val_loader,
         batch_size=opt.batchsize, shuffle=True, num_workers=opt.num_workers, drop_last=True)
 
     for epoch in range(opt.epoch, opt.max_epoch):
@@ -63,14 +62,14 @@ def train(network, loader, opt):
                 I1, I2 = batch
                 input1, target1, meta1 = I1
                 input2, target2, meta2 = I2
-                predicted = network(torch.cat([input2.type(Tensor), input1.type(Tensor)], 1),
-                                    (meta2 - meta1)[:, None].type(Tensor))
+                predicted = network(input2.type(Tensor), input1.type(Tensor),
+                                    meta2[:, None].type(Tensor), meta1[:, None].type(Tensor))
 
             else:
                 I1, I2 = batch
                 input1, target1 = I1
                 input2, target2 = I2
-                predicted = network(torch.cat([input2.type(Tensor), input1.type(Tensor)], 1))
+                predicted = network(input2.type(Tensor), input1.type(Tensor))
 
             targetdiff = torch.tensor(target2-target1)[:, None].type(Tensor)
 
@@ -199,8 +198,7 @@ def test(network, loader, opt, overwrite=False):
 
         network.eval()
 
-        loader_test = torch.utils.data.DataLoader(
-            loader(root=opt.image_dir, trainvaltest='test', transform=False, opt=opt),
+        loader_test = torch.utils.data.DataLoader(args.loader_test,
             batch_size=opt.batchsize, shuffle=False, num_workers=opt.num_workers)
 
         tmp_stack_target = np.empty((0, 1))
@@ -498,14 +496,13 @@ if __name__ == "__main__":
 
     model = LILAC(args)
     print("Num of Model Parameter:", count_parameters(model))
-    loader = args.loader
 
     if args.run_mode == 'eval':
         print(' ----------------- Testing initiated -----------------')
-        test(model, loader, args)
+        test(model, args)
 
     else:
         assert args.run_mode == 'train', "check run_mode"
         print(' ----------------- Training initiated -----------------')
-        train(model, loader, args)
+        train(model, args)
 

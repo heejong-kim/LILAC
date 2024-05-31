@@ -27,14 +27,14 @@ dict_transform = {'embryo': transforms.Compose([
 
 
 class loader2D(Dataset):
-    def __init__(self, args):
+    def __init__(self, args, trainvaltest='train'):
 
-        if args.run_mode == 'train':
+        if trainvaltest == 'train':
             self.demo = pd.read_csv(args.csv_file_train, index_col=0)
             self.augmentation = True
             assert set(['fname', 'subject', args.targetname]).issubset(
                 set(list(self.demo.columns))), f"Check input csv file column names"
-        elif args.run_mode == 'val':
+        elif trainvaltest == 'val':
             self.demo = pd.read_csv(args.csv_file_val, index_col=0)
             self.augmentation = False
             assert set(['fname', 'subject', args.targetname]).issubset(
@@ -96,14 +96,14 @@ class loader2D(Dataset):
 
 
 class loader3D(Dataset):
-    def __init__(self, args):
+    def __init__(self, args, trainvaltest):
 
-        if args.run_mode == 'train':
+        if trainvaltest == 'train':
             self.demo = pd.read_csv(args.csv_file_train, index_col=0)
             self.augmentation = True
             assert set(['fname', 'subject', args.targetname]).issubset(
                 set(list(self.demo.columns))), f"Check input csv file column names"
-        elif args.run_mode == 'val':
+        elif trainvaltest == 'val':
             self.demo = pd.read_csv(args.csv_file_val, index_col=0)
             self.augmentation = False
 

@@ -341,9 +341,17 @@ def run_setup(args):
     args.image_size = image_size
 
     if len(args.image_size) == 2:
-        args.loader = loader2D(args)
+        if args.run_mode == 'train':
+            args.train_loader = loader2D(args, trainvaltest='train')
+            args.val_loader = loader2D(args, trainvaltest='val')
+        if args.run_mode == 'eval':
+            args.test_loader = loader2D(args, trainvaltest='test')
     elif len(args.image_size) == 3:
-        args.loader = loader3D(args)
+        if args.run_mode == 'train':
+            args.train_loader = loader3D(args, trainvaltest='train')
+            args.val_loader = loader3D(args, trainvaltest='val')
+        if args.run_mode == 'eval':
+            args.test_loader = loader3D(args, trainvaltest='test')
     else:
         raise NotImplementedError
 
@@ -356,7 +364,7 @@ if __name__ == "__main__":
 
     ## embryo
     args.batchsize = 64;
-    args.max_epoch = 40;
+    args.max_epoch = 1;
     args.num_workers = 8;
     args.targetname = 'phaseidx';
     args.optional_meta = []
@@ -371,6 +379,7 @@ if __name__ == "__main__":
     args.csv_file_train = '/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/demo_embryo_train.csv'
     args.csv_file_val = '/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/demo_embryo_val.csv'
     args.csv_file_test = '/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/demo_embryo_test.csv'
+    run_setup(args)
 
     # import pandas as pd
     # demo_all = pd.read_csv('/scratch/datasets/hk672/embryo/demo.csv', index_col=0)
@@ -387,7 +396,7 @@ if __name__ == "__main__":
 
     ## woundhealing
     args.batchsize = 128;
-    args.max_epoch = 40;
+    args.max_epoch = 1;
     args.num_workers = 8;
     args.targetname = 'timepoint';
     args.optional_meta = []
@@ -402,6 +411,7 @@ if __name__ == "__main__":
     args.csv_file_train = '/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/demo_woundhealing_train.csv'
     args.csv_file_val = '/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/demo_woundhealing_val.csv'
     args.csv_file_test = '/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/demo_woundhealing_test.csv'
+    run_setup(args)
 
     # import pandas as pd
     # demo_all = pd.read_csv('/scratch/datasets/hk672/woundhealing/demo/demo.csv', index_col=0)
@@ -431,6 +441,7 @@ if __name__ == "__main__":
     args.csv_file_train = '/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/demo_oasis-aging_train.csv'
     args.csv_file_val = '/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/demo_oasis-aging_val.csv'
     args.csv_file_test = '/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/demo_oasis-aging_test.csv'
+    run_setup(args)
 
     # import pandas as pd
     # demo_all_old = pd.read_csv('/share/sablab/nfs04/data/OASIS3/demo/demo-healthy-longitudinal-3D-preprocessed.csv', index_col=0)
@@ -466,6 +477,7 @@ if __name__ == "__main__":
     args.csv_file_train = '/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/demo_adni-mci_train.csv'
     args.csv_file_val = '/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/demo_adni-mci_val.csv'
     args.csv_file_test = '/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/demo_adni-mci_test.csv'
+    run_setup(args)
 
     # import pandas as pd
     # demo_all_old = pd.read_csv('/share/sablab/nfs04/data/ADNI_mci/demo/ADNIMERGE_MCI_long_dx_conversion.csv', index_col=0)
@@ -489,11 +501,11 @@ if __name__ == "__main__":
     loader = args.loader
 
     if args.run_mode == 'eval':
-        print(' -----------------Testing initiated -----------------')
+        print(' ----------------- Testing initiated -----------------')
         test(model, loader, args)
 
     else:
         assert args.run_mode == 'train', "check run_mode"
-        print(' -----------------Training initiated -----------------')
+        print(' ----------------- Training initiated -----------------')
         train(model, loader, args)
 

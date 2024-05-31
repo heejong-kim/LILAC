@@ -115,47 +115,46 @@ def train(network, opt):
 
             log_stats([np.mean(epoch_total_loss)], ['loss/train'], epoch, writer)
 
-            if not opt.no_validation:
-                network.eval()
-                valloss_total = []
-                for valstep, batch in enumerate(loader_val):
-                    if len(args.optional_meta) > 0:
-                        I1, I2 = batch
-                        input1, target1, meta1 = I1
-                        input2, target2, meta2 = I2
-                        predicted = network(torch.cat([input2.type(Tensor), input1.type(Tensor)], 1),
-                                            (meta2 - meta1)[:, None].type(Tensor))
+            network.eval()
+            valloss_total = []
+            for valstep, batch in enumerate(loader_val):
+                if len(args.optional_meta) > 0:
+                    I1, I2 = batch
+                    input1, target1, meta1 = I1
+                    input2, target2, meta2 = I2
+                    predicted = network(torch.cat([input2.type(Tensor), input1.type(Tensor)], 1),
+                                        (meta2 - meta1)[:, None].type(Tensor))
 
-                    else:
-                        I1, I2 = batch
-                        input1, target1 = I1
-                        input2, target2 = I2
-                        predicted = network(torch.cat([input2.type(Tensor), input1.type(Tensor)], 1))
-
-                    targetdiff = torch.tensor(target2 - target1)[:, None].type(Tensor)
-                    if opt.task_option == 'o':
-                        targetdiff[targetdiff > 0] = 1
-                        targetdiff[targetdiff == 0] = 0.5
-                        targetdiff[targetdiff < 0] = 0
-
-                    valloss = args.loss(predicted, targetdiff)
-                    valloss_total.append(valloss.item())
-
-                log_stats([np.mean(valloss_total)], ['loss/val'], epoch, writer)
-                val_loss_info = 'val loss: %.4e' % (np.mean(valloss_total))
-                print(' - '.join((epoch_info, time_info, loss_info, val_loss_info)), flush=True)
-                curr_val_loss = np.mean(valloss_total)
-                if prev_val_loss > curr_val_loss:
-                    torch.save(network.state_dict(),
-                               f"{opt.output_fullname}/model_best.pth")
-                    np.savetxt(f"{opt.output_fullname}/model_best.info", np.array([epoch]))
-                    prev_val_loss = curr_val_loss
-                    earlystoppingcount = 0  # New bottom
                 else:
-                    earlystoppingcount += 1
-                    print(f'Early stopping count: {earlystoppingcount}')
+                    I1, I2 = batch
+                    input1, target1 = I1
+                    input2, target2 = I2
+                    predicted = network(torch.cat([input2.type(Tensor), input1.type(Tensor)], 1))
 
-                network.train()
+                targetdiff = torch.tensor(target2 - target1)[:, None].type(Tensor)
+                if opt.task_option == 'o':
+                    targetdiff[targetdiff > 0] = 1
+                    targetdiff[targetdiff == 0] = 0.5
+                    targetdiff[targetdiff < 0] = 0
+
+                valloss = args.loss(predicted, targetdiff)
+                valloss_total.append(valloss.item())
+
+            log_stats([np.mean(valloss_total)], ['loss/val'], epoch, writer)
+            val_loss_info = 'val loss: %.4e' % (np.mean(valloss_total))
+            print(' - '.join((epoch_info, time_info, loss_info, val_loss_info)), flush=True)
+            curr_val_loss = np.mean(valloss_total)
+            if prev_val_loss > curr_val_loss:
+                torch.save(network.state_dict(),
+                           f"{opt.output_fullname}/model_best.pth")
+                np.savetxt(f"{opt.output_fullname}/model_best.info", np.array([epoch]))
+                prev_val_loss = curr_val_loss
+                earlystoppingcount = 0  # New bottom
+            else:
+                earlystoppingcount += 1
+                print(f'Early stopping count: {earlystoppingcount}')
+
+            network.train()
 
     torch.save(network.state_dict(), f"{opt.output_fullname}/model_epoch{epoch}.pth")
     network.eval()
@@ -327,7 +326,7 @@ def parse_args():
 
 
 def run_setup(args):
-    dict_loss = {'o': nn.BCELoss, 't': nn.MSELoss, 's': nn.MSELoss}
+    dict_loss = {'o': nn.BCEWithLogitsLoss(), 't': nn.MSELoss(), 's': nn.MSELoss()}
     dict_task = {'o': 'temporal_ordering', 't': 'regression', 's': 'regression'}
 
     args.loss = dict_loss[args.task_option]
@@ -383,9 +382,11 @@ if __name__ == "__main__":
 
     args = parse_args()
     print("Hyperparameter:")
-    print(args)
     run_setup(args)
+    print(args)
 
+    # python run.py --jobname='embryo' --batchsize=64 --max_epoch=1 --targetname='phaseidx' --optional_meta=[] --backbone_name='cnn_2D --task_option='o' --output_directory='output' --image_directory = '/scratch/datasets/hk672/embryo' --image_size='224,224' --csv_file_train = '/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/demo_embryo_train.csv' --csv_file_val = '/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/demo_embryo_val.csv' --csv_file_test = '/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/demo_embryo_test.csv'
+    '''
     ## embryo
     args.batchsize = 64;
     args.max_epoch = 1;
@@ -518,6 +519,8 @@ if __name__ == "__main__":
     # demo_train.to_csv(os.path.join(out_dir, 'demo_adni-mci_train.csv'))
     # demo_val.to_csv(os.path.join(out_dir, 'demo_adni-mci_val.csv'))
     # demo_test.to_csv(os.path.join(out_dir, 'demo_adni-mci_test.csv'))
+    
+    '''
 
     model = LILAC(args)
     print("Num of Model Parameter:", count_parameters(model))

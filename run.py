@@ -343,11 +343,17 @@ def run_setup(args):
         path_pref = args.jobname + '-' + dict_task[args.task_option] + '-' + \
                     'backbone_' + args.backbone_name + '-lr' + str(args.lr) + '-seed' + str(args.seed) + '-batch' + str(
             args.batchsize)
-    else:
+    elif ',' in args.optional_meta:
         path_pref = args.jobname + '-' + dict_task[args.task_option] + '-' + 'meta' + '_'.join(
             args.optional_meta) + '-' + \
                     'backbone_' + args.backbone_name + '-lr' + str(args.lr) + '-seed' + str(args.seed) + '-batch' + str(
             args.batchsize)
+    else:
+        path_pref = args.jobname + '-' + dict_task[args.task_option] + '-' + 'meta' + '_' + \
+            args.optional_meta + '-' + \
+                    'backbone_' + args.backbone_name + '-lr' + str(args.lr) + '-seed' + str(args.seed) + '-batch' + str(
+            args.batchsize)
+
 
     args.output_fullname = os.path.join(args.output_directory, path_pref)
     os.makedirs(args.output_fullname, exist_ok=True)
@@ -400,151 +406,6 @@ if __name__ == "__main__":
     run_setup(args)
     print("Hyperparameter:")
     print(args)
-
-    # TODO input optional meta part fix
-    # python run.py --jobname='embryo' --batchsize=64 --max_epoch=40 --targetname='phaseidx' --backbone_name='cnn_2D' --task_option='o' --output_directory='output' --image_directory='/scratch/datasets/hk672/embryo' --image_size='224,224' --csv_file_train='/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/demo_embryo_train.csv' --csv_file_val='/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/demo_embryo_val.csv' --csv_file_test='/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/demo_embryo_test.csv'
-    # python run.py --jobname='woundhealing' --batchsize=128 --max_epoch=40 --targetname='timepoint' --backbone_name='cnn_2D' --task_option='o' --output_directory='output' --image_directory='/scratch/datasets/hk672/woundhealing/data_preprocessed' --image_size='224,224' --csv_file_train='/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/demo_woundhealing_train.csv' --csv_file_val='/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/demo_woundhealing_val.csv' --csv_file_test='/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/demo_woundhealing_test.csv'
-    # python run.py --jobname='oasis-aging' --batchsize=16 --max_epoch=100 --targetname='age' --backbone_name='cnn_3D' --task_option='t' --output_directory='output' --image_directory='/share/sablab/nfs04/data/OASIS3/npp-preprocessed/image' --image_size='128,128,128' --csv_file_train='/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/demo_oasis-aging_train.csv' --csv_file_val='/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/demo_oasis-aging_val.csv' --csv_file_test='/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/demo_oasis-aging_test.csv'
-    # python run.py --jobname='adni-mci' --batchsize=16 --max_epoch=40 --targetname='CDRSB' --backbone_name='cnn_3D' --task_option='s' --output_directory='output' --image_directory='/scratch/datasets/hk672/adni-all-3d-preprocessed/image' --image_size='128,128,128' --csv_file_train='/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/demo_adni-mci_train.csv' --csv_file_val='/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/demo_adni-mci_val.csv' --csv_file_test='/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/demo_adni-mci_test.csv'
-
-
-    # python run.py --jobname='embryo' --batchsize=64 --max_epoch=2 --targetname='phaseidx' --backbone_name='cnn_2D' --task_option='o' --output_directory='output' --image_directory='/scratch/datasets/hk672/embryo' --image_size='224,224' --csv_file_train='/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/demo_embryo_train.csv' --csv_file_val='/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/demo_embryo_val.csv' --csv_file_test='/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/demo_embryo_test.csv' --run_mode='eval'
-    # python run.py --jobname='woundhealing' --batchsize=128 --max_epoch=2 --targetname='timepoint' --backbone_name='cnn_2D' --task_option='o' --output_directory='output' --image_directory='/scratch/datasets/hk672/woundhealing/data_preprocessed' --image_size='224,224' --csv_file_train='/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/demo_woundhealing_train.csv' --csv_file_val='/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/demo_woundhealing_val.csv' --csv_file_test='/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/demo_woundhealing_test.csv' --run_mode='eval'
-
-    '''
-    ## embryo
-    args.batchsize = 64;
-    args.max_epoch = 1;
-    args.num_workers = 8;
-    args.targetname = 'phaseidx';
-    args.lr = 0.001;
-    args.backbone_name = 'cnn_2D';
-    args.save_epoch_num = 1;
-    args.task_option = 'o'
-    args.output_directory = 'output'
-    args.jobname = 'embryo'
-    args.image_directory = '/scratch/datasets/hk672/embryo';
-    args.image_size = "224, 224"
-    args.csv_file_train = '/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/demo_embryo_train.csv'
-    args.csv_file_val = '/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/demo_embryo_val.csv'
-    args.csv_file_test = '/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/demo_embryo_test.csv'
-    run_setup(args)
-
-    # import pandas as pd
-    # demo_all = pd.read_csv('/scratch/datasets/hk672/embryo/demo.csv', index_col=0)
-    # demo_all['subject'] = demo_all.embryoname
-    # demo_all = demo_all.drop(columns = ['embryoname','embryoidx',  'imagename-fullpath', 'resizefailed'])
-    # # 'phase', 'phaseidx', target
-    # demo_train = demo_all[demo_all.trainvaltest == 'train'].reset_index(drop=True).drop(columns = [ 'trainvaltest'])
-    # demo_val = demo_all[demo_all.trainvaltest == 'val'].reset_index(drop=True).drop(columns = ['trainvaltest'])
-    # demo_test = demo_all[demo_all.trainvaltest == 'test'].reset_index(drop=True).drop(columns = ['trainvaltest'])
-    # out_dir = '/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release'
-    # demo_train.to_csv(os.path.join(out_dir, 'demo_embryo_train.csv'))
-    # demo_val.to_csv(os.path.join(out_dir, 'demo_embryo_val.csv'))
-    # demo_test.to_csv(os.path.join(out_dir, 'demo_embryo_test.csv'))
-
-    ## woundhealing
-    args.batchsize = 128;
-    args.max_epoch = 1;
-    args.num_workers = 8;
-    args.targetname = 'timepoint';
-    args.lr = 0.001;
-    args.backbone_name = 'cnn_2D';
-    args.save_epoch_num = 1;
-    args.task_option = 'o'
-    args.output_directory = 'output'
-    args.jobname = 'woundhealing'
-    args.image_directory = '/scratch/datasets/hk672/woundhealing/data_preprocessed';
-    args.image_size = "224, 224"
-    args.csv_file_train = '/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/demo_woundhealing_train.csv'
-    args.csv_file_val = '/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/demo_woundhealing_val.csv'
-    args.csv_file_test = '/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/demo_woundhealing_test.csv'
-    run_setup(args)
-
-    # import pandas as pd
-    # demo_all = pd.read_csv('/scratch/datasets/hk672/woundhealing/demo/demo.csv', index_col=0)
-    # demo_all = demo_all.drop(columns=['subject_timepoint', 'roi', 'roifname'])
-    # demo_train = demo_all[demo_all.trainvaltest == 'train'].reset_index(drop=True).drop(columns = ['trainvaltest'])
-    # demo_val = demo_all[demo_all.trainvaltest == 'val'].reset_index(drop=True).drop(columns = ['trainvaltest'])
-    # demo_test = demo_all[demo_all.trainvaltest == 'test'].reset_index(drop=True).drop(columns = ['trainvaltest'])
-    # out_dir = '/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release'
-    # demo_train.to_csv(os.path.join(out_dir, 'demo_woundhealing_train.csv'))
-    # demo_val.to_csv(os.path.join(out_dir, 'demo_woundhealing_val.csv'))
-    # demo_test.to_csv(os.path.join(out_dir, 'demo_woundhealing_test.csv'))
-
-    ## oasis aging "oasis-aging"
-    args.batchsize = 16
-    args.max_epoch = 1
-    args.num_workers = 8
-    args.lr = 0.001
-    args.backbone_name = 'cnn_3D'
-    args.image_directory = '/share/sablab/nfs04/data/OASIS3/npp-preprocessed/image' # '/scratch/datasets/hk672/oasis-3d-preprocessed/image'
-    args.task_option = 't'  # TODO loader check time interval
-    args.output_directory = 'output'
-    args.jobname = 'oasis-aging'
-    args.targetname = 'age'
-    args.image_channel = 1
-    args.image_size = "128, 128, 128"
-    args.csv_file_train = '/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/demo_oasis-aging_train.csv'
-    args.csv_file_val = '/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/demo_oasis-aging_val.csv'
-    args.csv_file_test = '/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/demo_oasis-aging_test.csv'
-    run_setup(args)
-
-    # import pandas as pd
-    # demo_all_old = pd.read_csv('/share/sablab/nfs04/data/OASIS3/demo/demo-healthy-longitudinal-3D-preprocessed.csv', index_col=0)
-    # demo_all = pd.DataFrame()
-    # demo_all['subject'] = demo_all_old['subject-id']
-    # demo_all['age'] = demo_all_old['age']
-    # demo_all['fname'] = demo_all_old['fname']
-    # demo_all['trainvaltest'] = demo_all_old['trainvaltest']
-    #
-    # demo_train = demo_all[demo_all.trainvaltest == 'train'].reset_index(drop=True).drop(columns = ['trainvaltest'])
-    # demo_val = demo_all[demo_all.trainvaltest == 'val'].reset_index(drop=True).drop(columns = ['trainvaltest'])
-    # demo_test = demo_all[demo_all.trainvaltest == 'test'].reset_index(drop=True).drop(columns = ['trainvaltest'])
-    # out_dir = '/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release'
-    # demo_train.to_csv(os.path.join(out_dir, 'demo_oasis-aging_train.csv'))
-    # demo_val.to_csv(os.path.join(out_dir, 'demo_oasis-aging_val.csv'))
-    # demo_test.to_csv(os.path.join(out_dir, 'demo_oasis-aging_test.csv'))
-
-
-
-    ## mci w/ meta "adni-mci"
-    args.batchsize = 16
-    args.max_epoch = 1
-    args.num_workers = 8
-    args.lr = 0.001
-    args.backbone_name = 'cnn_3D'
-    args.image_directory = '/scratch/datasets/hk672/adni-all-3d-preprocessed/'
-    args.task_option = 's'
-    args.output_directory = 'output'
-    args.optional_meta = ['AGExSEX']
-    args.jobname = 'mci-cdrsb'
-    args.targetname = 'CDRSB'
-    args.image_channel = 1
-    args.image_size = "128, 128, 128"
-    args.csv_file_train = '/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/demo_adni-mci_train.csv'
-    args.csv_file_val = '/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/demo_adni-mci_val.csv'
-    args.csv_file_test = '/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/demo_adni-mci_test.csv'
-    run_setup(args)
-
-    # import pandas as pd
-    # demo_all_old = pd.read_csv('/share/sablab/nfs04/data/ADNI_mci/demo/ADNIMERGE_MCI_long_dx_conversion.csv', index_col=0)
-    # demo_all = pd.DataFrame()
-    # demo_all['subject'] = demo_all_old['PTID']
-    # demo_all['trainvaltest'] = demo_all_old['trainvaltest']
-    # demo_all['CDRSB'] = demo_all_old['CDRSB']
-    # demo_all['AGExSEX'] = np.array(demo_all_old['Month']).astype('int') * np.array(demo_all_old['PTGENDER'] == 'Male').astype('int') # Month difference
-    # demo_all['fname'] = np.array('I'+demo_all_old.IMAGEUID.astype('int').astype('str') + '_mni_norm.nii.gz')
-    #
-    # demo_train = demo_all[demo_all.trainvaltest == 'train'].reset_index(drop=True).drop(columns = ['trainvaltest'])
-    # demo_val = demo_all[demo_all.trainvaltest == 'val'].reset_index(drop=True).drop(columns = ['trainvaltest'])
-    # demo_test = demo_all[demo_all.trainvaltest == 'test'].reset_index(drop=True).drop(columns = ['trainvaltest'])
-    # out_dir = '/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release'
-    # demo_train.to_csv(os.path.join(out_dir, 'demo_adni-mci_train.csv'))
-    # demo_val.to_csv(os.path.join(out_dir, 'demo_adni-mci_val.csv'))
-    # demo_test.to_csv(os.path.join(out_dir, 'demo_adni-mci_test.csv'))
-    
-    '''
 
     model = LILAC(args)
     print("Num of Model Parameter:", count_parameters(model))

@@ -4,11 +4,9 @@ import os
 from PIL import Image
 import torchvision.transforms as transforms
 from torchvision.transforms.functional import InterpolationMode
-import torchvision.transforms.functional as F
 import torch
 import torchio as tio
-import nibabel as nib
-from utils import *
+import numpy as np
 
 dict_transform = {'embryo': transforms.Compose([
     transforms.RandomApply(torch.nn.ModuleList(
@@ -139,14 +137,14 @@ class loader3D(Dataset):
         self.index_combination = index_combination
 
         if len(args.optional_meta)>0:
-            self.optional_meta = True
-            self.optional_meta = np.array(self.demo[args.optional_meta]) # test  + args.optional_meta
+            self.optional_meta = np.array(self.demo[args.optional_meta])
 
     def __getitem__(self, index):
         index1, index2 = self.index_combination[index].astype('int')
         target1, target2 = self.demo[self.targetname][index1], self.demo[self.targetname][index2]
 
-        meta1, meta2 = self.optional_meta[index1, :], self.optional_meta[index2, :]
+        if len(self.optional_meta) > 0:
+            meta1, meta2 = self.optional_meta[index1, :], self.optional_meta[index2, :]
 
         fname1 = os.path.join(self.imgdir, self.fnames[int(index1)])
         fname2 = os.path.join(self.imgdir, self.fnames[int(index2)])

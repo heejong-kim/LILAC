@@ -187,7 +187,7 @@ def test(network,opt, overwrite = False):
 
         for dtm in dict_task_metrics[args.task_option]:
             if dtm == 'auc' and args.task_option == 'o':
-                print('warning: only binary prediction pairs')
+                print(f'warning: {dtm} calculated only for binary pairs')
                 feature_diff_auc = sigmoid(torch.tensor(feature_diff)).numpy()
                 print(f'{dtm}:{dict_metric[dtm](target_diff[target_diff != 0.5], feature_diff_auc[target_diff != 0.5]):.3}')
             else:
@@ -280,7 +280,7 @@ def test(network,opt, overwrite = False):
 
         for dtm in dict_task_metrics[args.task_option]:
             if dtm == 'auc' and args.task_option == 'o':
-                print('warning: only binary prediction pairs')
+                print(f'warning: {dtm} calculated only for binary pairs')
                 feature_diff_auc = sigmoid(torch.tensor(feature_diff)).numpy()
                 print(f'{dtm}:{dict_metric[dtm](target_diff[target_diff != 0.5], feature_diff_auc[target_diff != 0.5]):.3}')
             else:
@@ -395,8 +395,8 @@ def run_setup(args):
 if __name__ == "__main__":
 
     args = parse_args()
-    print("Hyperparameter:")
     run_setup(args)
+    print("Hyperparameter:")
     print(args)
 
     # TODO input optional meta part fix
@@ -443,7 +443,6 @@ if __name__ == "__main__":
     args.max_epoch = 1;
     args.num_workers = 8;
     args.targetname = 'timepoint';
-    args.optional_meta = []
     args.lr = 0.001;
     args.backbone_name = 'cnn_2D';
     args.save_epoch_num = 1;
@@ -478,7 +477,6 @@ if __name__ == "__main__":
     args.image_directory = '/share/sablab/nfs04/data/OASIS3/npp-preprocessed/image' # '/scratch/datasets/hk672/oasis-3d-preprocessed/image'
     args.task_option = 't'  # TODO loader check time interval
     args.output_directory = 'output'
-    args.optional_meta = []
     args.jobname = 'oasis-aging'
     args.targetname = 'age'
     args.image_channel = 1

@@ -65,7 +65,7 @@ def train(network, opt):
                 input1, target1, meta1 = I1
                 input2, target2, meta2 = I2
                 predicted = network(input2.type(Tensor), input1.type(Tensor),
-                                    meta2[:, None].type(Tensor), meta1[:, None].type(Tensor))
+                                    meta2.type(Tensor), meta1.type(Tensor))
 
             else:
                 I1, I2 = batch
@@ -400,6 +400,7 @@ def run_setup(args):
     print(' ----------- Run Setup Summary -----------')
     print(f'JOB NAME: {args.jobname}')
     print(f'TASK: {dict_task[args.task_option] }')
+    print(f'Target Attribute: {args.targetname}')
     print(f'BACKBONE: {args.backbone_name}')
     print(f'RUN MODE: {args.run_mode}')
 
@@ -421,3 +422,23 @@ if __name__ == "__main__":
         assert args.run_mode == 'train', "check run_mode"
         print(' ----------------- Training initiated -----------------')
         train(model, args)
+
+
+    ## mci w/ meta "adni-mci"
+    args.batchsize = 4
+    args.max_epoch = 1
+    args.num_workers = 8
+    args.lr = 0.001
+    args.backbone_name = 'cnn_3D'
+    args.image_directory = '/scratch/datasets/hk672/adni-all-3d-preprocessed/image'
+    args.task_option = 's'
+    args.output_directory = 'output'
+    args.optional_meta = 'AGExSEX'
+    args.jobname = 'mci-cdrsb'
+    args.targetname = 'CDRSB'
+    args.image_channel = 1
+    args.image_size = "128, 128, 128"
+    args.csv_file_train = '/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/tmp-train'
+    args.csv_file_val = '/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/tmp-val'
+    args.csv_file_test = '/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/tmp-test'
+    run_setup(args)

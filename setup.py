@@ -31,7 +31,7 @@ setup(
         "pillow >= 8.4.0",
         "torchvision >= 0.11.2",
         "numpy >= 1.21.2",
-        "tensorboardx >= 2.4.1",
+        "tensorboard",
         "torchio >= 0.18.73",
     ],
     license="Apache",

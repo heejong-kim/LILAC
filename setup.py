@@ -26,14 +26,13 @@ setup(
     author_email="heejong.hj.kim@gmail.com",
     url="https://github.com/heejong-kim/lilac",
     install_requires=[
-        "torchvision >= 0.11.2",
-        "tensorboardx >= 2.4.1",
-        "torchio >= 0.18.73",
         "pytorch >= 1.10.1",
         "pandas >= 1.3.4",
         "pillow >= 8.4.0",
         "torchvision >= 0.11.2",
         "numpy >= 1.21.2",
+        "tensorboardx >= 2.4.1",
+        "torchio >= 0.18.73",
     ],
     license="Apache",
     packages=find_packages(

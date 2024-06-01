@@ -23,18 +23,20 @@ For questions and feedback, please [open issues](https://github.com/heejong-kim/
 ```bash
 git clone https://github.com/heejong-kim/lilac.git
 cd lilac
+# if you prefer to use install in conda env
+conda create -n lilac python pip 
+conda activate lilac
 pip install -e .
 ```
 
 ### Requirements
 The LILAC package depends on the following requirements:
+- pytorch>=1.10.1 
 - torchvision>=0.11.2
 - tensorboardx>=2.4.1
 - torchio>=0.18.73
-- pytorch>=1.10.1 
 - pandas>=1.3.4
 - pillow>=8.4.0
-- torchvision>=0.11.2
 - numpy>=1.21.2
 
 Running `pip install -e .` will automatically check for and install all of these requirements.

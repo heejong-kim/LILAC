@@ -65,7 +65,7 @@ def train(network, opt):
                 input1, target1, meta1 = I1
                 input2, target2, meta2 = I2
                 predicted = network(input2.type(Tensor), input1.type(Tensor),
-                                    meta2.type(Tensor), meta1.type(Tensor))
+                                    meta = [meta2.type(Tensor), meta1.type(Tensor)])
 
             else:
                 I1, I2 = batch
@@ -123,7 +123,7 @@ def train(network, opt):
                     input1, target1, meta1 = I1
                     input2, target2, meta2 = I2
                     predicted = network(input2.type(Tensor), input1.type(Tensor),
-                                        meta2[:, None].type(Tensor), meta1[:, None].type(Tensor))
+                                        meta = [meta2.type(Tensor), meta1.type(Tensor)])
 
                 else:
                     I1, I2 = batch
@@ -243,7 +243,7 @@ def test(network,opt, overwrite = False):
                 input1, target1, meta1 = I1
                 input2, target2, meta2 = I2
                 predicted = network(input2.type(Tensor), input1.type(Tensor),
-                                    meta2[:, None].type(Tensor), meta1[:, None].type(Tensor))
+                                    meta = [meta2.type(Tensor), meta1.type(Tensor)])
 
             else:
                 I1, I2 = batch
@@ -364,7 +364,6 @@ def run_setup(args):
     set_manual_seed(args.seed)
 
     # set up GPU
-    print(f"Available GPUs: {torch.cuda.device_count()}")
     if torch.cuda.is_available():
         args.device = torch.device("cuda")
     else:
@@ -397,12 +396,15 @@ def run_setup(args):
     else:
         raise NotImplementedError
 
-    print(' ----------- Run Setup Summary -----------')
+    print(' ----------------- Run Setup Summary -----------------')
     print(f'JOB NAME: {args.jobname}')
     print(f'TASK: {dict_task[args.task_option] }')
     print(f'Target Attribute: {args.targetname}')
+    if len(args.optional_meta)>0:
+        print(f'Optional Meta: {args.optional_meta}')
     print(f'BACKBONE: {args.backbone_name}')
     print(f'RUN MODE: {args.run_mode}')
+    print(f"Num of GPUs: {torch.cuda.device_count()}")
 
 
 

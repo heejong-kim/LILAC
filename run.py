@@ -316,9 +316,9 @@ def parse_args():
     parser.add_argument('--image_size', default="128, 128, 128", type=str, help="w,h for 2D and w,h,d for 3D")
     parser.add_argument('--image_channel', default=1, type=int)
     parser.add_argument('--task_option', default='o', choices=['o', 't', 's'],
-                        type=str, help="o: temporal ''o''rdering\n "
-                                       "t: regression for ''t''ime interval\n "
-                                       "s: regression with optional meta for a ''s''pecific target variable\n ")
+                        type=str, help="o: temporal 'o'rdering\n "
+                                       "t: regression for 't'ime interval\n "
+                                       "s: regression with optional meta for a 's'pecific target variable\n ")
     parser.add_argument('--targetname', default='age', type=str)
     parser.add_argument('--optional_meta', default='', type=str,
                         help='list optional meta names to be used (e.g., ["AGE", "AGE_x_SEX"]). csv files should include the meta data name')

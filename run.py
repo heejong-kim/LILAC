@@ -358,6 +358,8 @@ def run_setup(args):
     # string to list
     image_size = [int(item) for item in args.image_size.split(',')]
     args.image_size = image_size
+    optiona_meta_names = [int(item) for item in args.optional_meta.split(',')]
+    args.optional_meta = optiona_meta_names
 
     if len(args.image_size) == 2:
         if args.run_mode == 'train':
@@ -374,8 +376,6 @@ def run_setup(args):
     else:
         raise NotImplementedError
 
-    optiona_meta_names = [int(item) for item in args.optional_meta.split(',')]
-    args.optional_meta = optiona_meta_names
 
 
 if __name__ == "__main__":

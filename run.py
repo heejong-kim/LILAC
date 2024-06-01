@@ -328,7 +328,7 @@ def run_setup(args):
 
     args.loss = dict_loss[args.task_option]
 
-    if args.optional_meta == []:
+    if args.optional_meta == '':
         path_pref = args.jobname + '-' + dict_task[args.task_option] + '-' + \
                     'backbone_' + args.backbone_name + '-lr' + str(args.lr) + '-seed' + str(args.seed) + '-batch' + str(
             args.batchsize)

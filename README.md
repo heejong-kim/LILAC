@@ -25,25 +25,19 @@ pip install -e .
 
 ### Requirements
 The LILAC package depends on the following requirements:
-
-- numpy>=1.19.1
-- ogb>=1.2.6
-- outdated>=0.2.0
-- pandas>=1.1.0
-- pillow>=7.2.0
-- pytz>=2020.4
-- torch>=1.7.0
-- torch-scatter>=2.0.5
-- torch-geometric>=2.0.1
-- torchvision>=0.8.2
-- tqdm>=4.53.0
-- scikit-learn>=0.20.0
-- scipy>=1.5.4
+- torchvision>=0.11.2
+- tensorboardx>=2.4.1
+- torchio>=0.18.73
+- pytorch>=1.10.1 
+- pandas>=1.3.4
+- pillow>=8.4.0
+- torchvision>=0.11.2
+- numpy>=1.21.2
 
 Running `pip install -e .` will automatically check for and install all of these requirements.
 
 
-All baseline experiments in the paper were run on Python 3.8.5 and CUDA 10.1.
+All baseline experiments in the paper were run on Python 3.9.7 and CUDA 11.2.
 
 
 ## Examples

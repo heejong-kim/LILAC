@@ -445,4 +445,8 @@ if __name__ == "__main__":
     args.csv_file_val = '/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/tmp-val'
     args.csv_file_test = '/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/tmp-test'
     run_setup(args)
+    
+    
+    python run.py --jobname='adni-mci' --batchsize=16 --max_epoch=2 --targetname='CDRSB' --backbone_name='cnn_3D' --task_option='s' --output_directory='output' --image_directory='/scratch/datasets/hk672/adni-all-3d-preprocessed/image' --image_size='128,128,128' --csv_file_train='/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/tmp-train' --csv_file_val='/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/tmp-val' --csv_file_test='/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/tmp-test' --optional_meta="AGExSEX"
+    python run.py --jobname='adni-mci' --batchsize=16 --max_epoch=2 --targetname='CDRSB' --backbone_name='cnn_3D' --task_option='s' --output_directory='output' --image_directory='/scratch/datasets/hk672/adni-all-3d-preprocessed/image' --image_size='128,128,128' --csv_file_train='/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/tmp-train' --csv_file_val='/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/tmp-val' --csv_file_test='/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/tmp-test' --optional_meta="AGExSEX,AGExSEX"
 '''

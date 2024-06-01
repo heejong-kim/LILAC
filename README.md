@@ -31,7 +31,7 @@ pip install -e .
 
 ### Requirements
 The LILAC package depends on the following requirements:
-- pytorch
+- torch
 - torchvision>=0.11.2
 - tensorboardx>=2.4.1
 - torchio>=0.18.73
@@ -131,3 +131,4 @@ python run.py \
     --csv_file_test='./demo_for_release/demo_adni-mci_test.csv'
     --run_mode='eval'
 ```
+### Input CSV files

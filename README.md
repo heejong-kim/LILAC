@@ -1,6 +1,5 @@
 # Learning-based Inference of Longitudinal imAge Changes (LILAC)
 
-[//]: # ([[Website]&#40;&#41;] [[Paper]&#40;&#41;])
 
 ## Overview
 
@@ -16,8 +15,6 @@ For more information, please read the LILAC [paper]().
 [README.md.html](..%2F..%2FDownloads%2FREADME.md.html)
 For questions and feedback, please [open issues](https://github.com/heejong-kim/lilac/issues) or email the [corresponding author](https://heejongkim.com)
 
-[//]: # (## Updates)
-[//]: # (- [May 2024] The preprint for LILAC is available on [arXiv]&#40;https://arxiv.org/abs/2405.14019&#41;!)
 
 ## Installation
 ```bash

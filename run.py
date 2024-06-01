@@ -423,6 +423,7 @@ if __name__ == "__main__":
         print(' ----------------- Training initiated -----------------')
         train(model, args)
 
+'''
 
     ## mci w/ meta "adni-mci"
     args.batchsize = 4
@@ -442,3 +443,4 @@ if __name__ == "__main__":
     args.csv_file_val = '/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/tmp-val'
     args.csv_file_test = '/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/tmp-test'
     run_setup(args)
+'''

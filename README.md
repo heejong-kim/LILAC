@@ -31,7 +31,7 @@ pip install -e .
 
 ### Requirements
 The LILAC package depends on the following requirements:
-- pytorch>=1.10.1 
+- pytorch
 - torchvision>=0.11.2
 - tensorboardx>=2.4.1
 - torchio>=0.18.73

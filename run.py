@@ -201,7 +201,7 @@ def test(network,opt, overwrite = False):
         run = True
 
     if run:
-        print('working on ', resultname)
+        print('Loading ', resultname)
         cuda = True
         parallel = True
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -265,8 +265,6 @@ def test(network,opt, overwrite = False):
             tmp_stack_target1 = np.append(tmp_stack_target1, np.array(target1)[:, None], axis=0)
             tmp_stack_target2 = np.append(tmp_stack_target2, np.array(target2)[:, None], axis=0)
 
-        print('=========================')
-        print(resultfilename)
 
         result['target'] = tmp_stack_target
         result['predicted'] = tmp_stack_predicted
@@ -278,6 +276,7 @@ def test(network,opt, overwrite = False):
         target_diff = np.array(result['target'])
         feature_diff = np.array(result['predicted'])
 
+        print('Saved filename ', resultname)
         for dtm in dict_task_metrics[args.task_option]:
             if dtm == 'auc' and args.task_option == 'o':
                 print(f'warning: {dtm} calculated only for binary pairs')
@@ -398,14 +397,18 @@ def run_setup(args):
     else:
         raise NotImplementedError
 
+    print(' ----------- Run Setup Summary -----------')
+    print(f'JOB NAME: {args.jobname}')
+    print(f'TASK: {dict_task[args.task_option] }')
+    print(f'BACKBONE: {args.backbone_name}')
+    print(f'RUN MODE: {args.run_mode}')
+
 
 
 if __name__ == "__main__":
 
     args = parse_args()
     run_setup(args)
-    print("Hyperparameter:")
-    print(args)
 
     model = LILAC(args)
     print("Num of Model Parameter:", count_parameters(model))

@@ -160,7 +160,7 @@ def train(network, opt):
     network.eval()
 
 
-def test(network,opt):
+def test(network,opt, overwrite = False):
     import sklearn.metrics as metrics
     from scipy.stats import pearsonr
     sigmoid = nn.Sigmoid()
@@ -180,15 +180,22 @@ def test(network,opt):
     run = False
     resultfilename = os.path.join(f'' + opt.output_fullname, f'{resultname}.csv')
     if os.path.exists(resultfilename):
+
         result = pd.read_csv(resultfilename)
         target_diff = np.array(result['target'])
         feature_diff = np.array(result['predicted'])
 
         for dtm in dict_task_metrics[args.task_option]:
             if dtm == 'auc' and args.task_option == 'o':
-                feature_diff = sigmoid(torch.tensor(feature_diff)).numpy()
+                print('warning: only binary prediction pairs')
+                feature_diff_auc = sigmoid(torch.tensor(feature_diff)).numpy()
+                print(f'{dtm}:{dict_metric[dtm](target_diff[target_diff != 0.5], feature_diff_auc[target_diff != 0.5]):.3}')
+            else:
+                if dtm == 'loss':
+                    print(f'{dtm}:{opt.loss(torch.tensor(feature_diff), torch.tensor(target_diff)).item():.3f}')
+                else:
+                    print(f'{dtm}:{dict_metric[dtm](target_diff, feature_diff)}:.3f')
 
-            print(f'{dtm}:', dict_metric[dtm](target_diff, feature_diff))
 
     if not os.path.exists(resultfilename) or overwrite:
         run = True
@@ -220,8 +227,8 @@ def test(network,opt):
 
         # moved this to test subjectid key problem
         result = pd.DataFrame()
-        result['subjectID'] = np.array(
-            loader_test.dataset.demo['subjectid'].iloc[loader_test.dataset.index_combination[:, 0]])
+        result['subject'] = np.array(
+            loader_test.dataset.demo['subject'].iloc[loader_test.dataset.index_combination[:, 0]])
 
         for teststep, batch in enumerate(loader_test):
             sys.stdout.write(
@@ -261,7 +268,6 @@ def test(network,opt):
         print('=========================')
         print(resultfilename)
 
-        result = pd.DataFrame()
         result['target'] = tmp_stack_target
         result['predicted'] = tmp_stack_predicted
         result['target1'] = tmp_stack_target1
@@ -274,9 +280,14 @@ def test(network,opt):
 
         for dtm in dict_task_metrics[args.task_option]:
             if dtm == 'auc' and args.task_option == 'o':
-                feature_diff = sigmoid(torch.tensor(feature_diff)).numpy()
-
-            print(f'{dtm}:', dict_metric[dtm](target_diff, feature_diff))
+                print('warning: only binary prediction pairs')
+                feature_diff_auc = sigmoid(torch.tensor(feature_diff)).numpy()
+                print(f'{dtm}:{dict_metric[dtm](target_diff[target_diff != 0.5], feature_diff_auc[target_diff != 0.5]):.3}')
+            else:
+                if dtm == 'loss':
+                    print(f'{dtm}:{opt.loss(torch.tensor(feature_diff), torch.tensor(target_diff)).item():.3f}')
+                else:
+                    print(f'{dtm}:{dict_metric[dtm](target_diff, feature_diff)}:.3f')
 
 
 def parse_args():
@@ -401,7 +412,6 @@ if __name__ == "__main__":
     args.max_epoch = 1;
     args.num_workers = 8;
     args.targetname = 'phaseidx';
-    args.optional_meta = []
     args.lr = 0.001;
     args.backbone_name = 'cnn_2D';
     args.save_epoch_num = 1;

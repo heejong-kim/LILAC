@@ -138,6 +138,8 @@ class loader3D(Dataset):
 
         if len(args.optional_meta)>0:
             self.optional_meta = np.array(self.demo[args.optional_meta])
+        else:
+            self.optional_meta = ''
 
     def __getitem__(self, index):
         index1, index2 = self.index_combination[index].astype('int')

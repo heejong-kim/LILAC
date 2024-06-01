@@ -122,14 +122,14 @@ def train(network, opt):
                     I1, I2 = batch
                     input1, target1, meta1 = I1
                     input2, target2, meta2 = I2
-                    predicted = network(torch.cat([input2.type(Tensor), input1.type(Tensor)], 1),
-                                        (meta2 - meta1)[:, None].type(Tensor))
+                    predicted = network(input2.type(Tensor), input1.type(Tensor),
+                                        meta2[:, None].type(Tensor), meta1[:, None].type(Tensor))
 
                 else:
                     I1, I2 = batch
                     input1, target1 = I1
                     input2, target2 = I2
-                    predicted = network(torch.cat([input2.type(Tensor), input1.type(Tensor)], 1))
+                    predicted = network(input2.type(Tensor), input1.type(Tensor))
 
                 targetdiff = torch.tensor(target2 - target1)[:, None].type(Tensor)
                 if opt.task_option == 'o':
@@ -235,14 +235,14 @@ def test(network, loader, opt, overwrite=False):
                 I1, I2 = batch
                 input1, target1, meta1 = I1
                 input2, target2, meta2 = I2
-                predicted = network(torch.cat([input2.type(Tensor), input1.type(Tensor)], 1),
-                                    (meta2 - meta1)[:, None].type(Tensor))
+                predicted = network(input2.type(Tensor), input1.type(Tensor),
+                                    meta2[:, None].type(Tensor), meta1[:, None].type(Tensor))
 
             else:
                 I1, I2 = batch
                 input1, target1 = I1
                 input2, target2 = I2
-                predicted = network(torch.cat([input2.type(Tensor), input1.type(Tensor)], 1))
+                predicted = network(input2.type(Tensor), input1.type(Tensor))
 
             targetdiff = torch.tensor(target2 - target1)[:, None].type(Tensor)
             if opt.task_option == 'o':

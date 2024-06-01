@@ -37,7 +37,7 @@ setup(
     license="Apache",
     packages=find_packages(
         exclude=[
-            "example_dataset_csv"
+            "demo_for_release"
         ]
     ),
     classifiers=[

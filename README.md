@@ -131,4 +131,4 @@ python run.py \
     --csv_file_test='./demo_for_release/demo_adni-mci_test.csv'
     --run_mode='eval'
 ```
-### Input CSV files
+All *.csv files above are available in ./demo_for_release.

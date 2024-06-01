@@ -310,8 +310,8 @@ def parse_args():
                                        "t: regression for ''t''ime interval\n "
                                        "s: regression with optional meta for a ''s''pecific target variable\n ")
     parser.add_argument('--targetname', default='age', type=str)
-    parser.add_argument('--optional_meta', default='', type=list,
-                        help='list optional meta names to be used. csv files should include the meta data')
+    parser.add_argument('--optional_meta', default='', type=str,
+                        help='list optional meta names to be used (e.g., ["AGE", "AGE_x_SEX"]). csv files should include the meta data name')
     parser.add_argument('--backbone_name', default='cnn_3D', type=str,
                         help="implemented models: cnn_3D, cnn_2D, resnet50_2D, resnet18_2D")
 
@@ -373,6 +373,9 @@ def run_setup(args):
             args.test_loader = loader3D(args, trainvaltest='test')
     else:
         raise NotImplementedError
+
+    optiona_meta_names = [int(item) for item in args.optional_meta.split(',')]
+    args.optional_meta = optiona_meta_names
 
 
 if __name__ == "__main__":

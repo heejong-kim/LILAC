@@ -148,8 +148,8 @@ class loader3D(Dataset):
         if len(self.optional_meta) > 0:
             meta1, meta2 = self.optional_meta[index1, :], self.optional_meta[index2, :]
 
-        fname1 = os.path.join(self.imgdir, self.fnames[int(index1)])
-        fname2 = os.path.join(self.imgdir, self.fnames[int(index2)])
+        fname1 = os.path.join(self.imgdir, self.demo.fname.iloc[int(index1)])
+        fname2 = os.path.join(self.imgdir, self.demo.fname.iloc[int(index2)])
 
         image1 = tio.ScalarImage(fname1)
         image2 = tio.ScalarImage(fname2)
@@ -199,7 +199,7 @@ class loader3D(Dataset):
         image1 = image1.numpy().astype('float')
         image2 = image2.numpy().astype('float')
 
-        if self.optional_meta:
+        if len(self.optional_meta) > 0:
             return [image1, target1, meta1], \
                    [image2, target2, meta2]
 

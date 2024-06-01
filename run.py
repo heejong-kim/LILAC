@@ -359,7 +359,7 @@ def run_setup(args):
     image_size = [int(item) for item in args.image_size.split(',')]
     args.image_size = image_size
     if len(args.optional_meta) > 0:
-        optiona_meta_names = [int(item) for item in args.optional_meta.split(',')]
+        optiona_meta_names = [item for item in args.optional_meta.split(',')]
         args.optional_meta = optiona_meta_names
     else:
         args.optional_meta = []

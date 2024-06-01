@@ -369,9 +369,11 @@ def run_setup(args):
     # string to list
     image_size = [int(item) for item in args.image_size.split(',')]
     args.image_size = image_size
-    if len(args.optional_meta) > 0:
+    if len(args.optional_meta) > 0 and ',' in args.optional_meta:
         optiona_meta_names = [item for item in args.optional_meta.split(',')]
         args.optional_meta = optiona_meta_names
+    elif len(args.optional_meta) > 0 and not(',' in args.optional_meta):
+        args.optional_meta = [args.optional_meta]
     else:
         args.optional_meta = []
 
@@ -400,8 +402,11 @@ if __name__ == "__main__":
     print(args)
 
     # TODO input optional meta part fix
-    # python run.py --jobname='embryo' --batchsize=64 --max_epoch=2 --targetname='phaseidx' --backbone_name='cnn_2D' --task_option='o' --output_directory='output' --image_directory='/scratch/datasets/hk672/embryo' --image_size='224,224' --csv_file_train='/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/demo_embryo_train.csv' --csv_file_val='/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/demo_embryo_val.csv' --csv_file_test='/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/demo_embryo_test.csv'
-    # python run.py --jobname='woundhealing' --batchsize=128 --max_epoch=2 --targetname='timepoint' --backbone_name='cnn_2D' --task_option='o' --output_directory='output' --image_directory='/scratch/datasets/hk672/woundhealing/data_preprocessed' --image_size='224,224' --csv_file_train='/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/demo_woundhealing_train.csv' --csv_file_val='/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/demo_woundhealing_val.csv' --csv_file_test='/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/demo_woundhealing_test.csv'
+    # python run.py --jobname='embryo' --batchsize=64 --max_epoch=40 --targetname='phaseidx' --backbone_name='cnn_2D' --task_option='o' --output_directory='output' --image_directory='/scratch/datasets/hk672/embryo' --image_size='224,224' --csv_file_train='/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/demo_embryo_train.csv' --csv_file_val='/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/demo_embryo_val.csv' --csv_file_test='/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/demo_embryo_test.csv'
+    # python run.py --jobname='woundhealing' --batchsize=128 --max_epoch=40 --targetname='timepoint' --backbone_name='cnn_2D' --task_option='o' --output_directory='output' --image_directory='/scratch/datasets/hk672/woundhealing/data_preprocessed' --image_size='224,224' --csv_file_train='/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/demo_woundhealing_train.csv' --csv_file_val='/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/demo_woundhealing_val.csv' --csv_file_test='/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/demo_woundhealing_test.csv'
+    # python run.py --jobname='oasis-aging' --batchsize=16 --max_epoch=100 --targetname='age' --backbone_name='cnn_3D' --task_option='t' --output_directory='output' --image_directory='/share/sablab/nfs04/data/OASIS3/npp-preprocessed/image' --image_size='128,128,128' --csv_file_train='/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/demo_oasis-aging_train.csv' --csv_file_val='/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/demo_oasis-aging_val.csv' --csv_file_test='/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/demo_oasis-aging_test.csv'
+    # python run.py --jobname='adni-mci' --batchsize=16 --max_epoch=40 --targetname='CDRSB' --backbone_name='cnn_3D' --task_option='s' --output_directory='output' --image_directory='/scratch/datasets/hk672/adni-all-3d-preprocessed/image' --image_size='128,128,128' --csv_file_train='/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/demo_adni-mci_train.csv' --csv_file_val='/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/demo_adni-mci_val.csv' --csv_file_test='/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/demo_adni-mci_test.csv'
+
 
     # python run.py --jobname='embryo' --batchsize=64 --max_epoch=2 --targetname='phaseidx' --backbone_name='cnn_2D' --task_option='o' --output_directory='output' --image_directory='/scratch/datasets/hk672/embryo' --image_size='224,224' --csv_file_train='/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/demo_embryo_train.csv' --csv_file_val='/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/demo_embryo_val.csv' --csv_file_test='/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/demo_embryo_test.csv' --run_mode='eval'
     # python run.py --jobname='woundhealing' --batchsize=128 --max_epoch=2 --targetname='timepoint' --backbone_name='cnn_2D' --task_option='o' --output_directory='output' --image_directory='/scratch/datasets/hk672/woundhealing/data_preprocessed' --image_size='224,224' --csv_file_train='/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/demo_woundhealing_train.csv' --csv_file_val='/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/demo_woundhealing_val.csv' --csv_file_test='/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/demo_woundhealing_test.csv' --run_mode='eval'
@@ -467,7 +472,6 @@ if __name__ == "__main__":
     # demo_val.to_csv(os.path.join(out_dir, 'demo_woundhealing_val.csv'))
     # demo_test.to_csv(os.path.join(out_dir, 'demo_woundhealing_test.csv'))
 
-    # python run.py --jobname='oasis-aging' --batchsize=16 --max_epoch=2 --targetname='age' --backbone_name='cnn_3D' --task_option='t' --output_directory='output' --image_directory='/share/sablab/nfs04/data/OASIS3/npp-preprocessed/image' --image_size='128,128,128' --csv_file_train='/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/demo_oasis-aging_train.csv' --csv_file_val='/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/demo_oasis-aging_val.csv' --csv_file_test='/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/demo_oasis-aging_test.csv'
     ## oasis aging "oasis-aging"
     args.batchsize = 16
     args.max_epoch = 1
@@ -503,7 +507,6 @@ if __name__ == "__main__":
     # demo_test.to_csv(os.path.join(out_dir, 'demo_oasis-aging_test.csv'))
 
 
-    # python run.py --jobname='adni-mci' --batchsize=16 --max_epoch=2 --targetname='age' --backbone_name='cnn_3D' --task_option='t' --output_directory='output' --image_directory='/scratch/datasets/hk672/oasis-3d-preprocessed/image' --image_size='128,128,128' --csv_file_train='/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/demo_oasis-aging_train.csv' --csv_file_val='/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/demo_oasis-aging_val.csv' --csv_file_test='/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/demo_oasis-aging_test.csv'
 
     ## mci w/ meta "adni-mci"
     args.batchsize = 16

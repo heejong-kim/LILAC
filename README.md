@@ -48,75 +48,87 @@ All baseline experiments in the paper were run on Python 3.8.5 and CUDA 10.1.
 
 ## Examples
 ### Learning to temporally order embryo images (LILAC-o)
-```bash
+```bash    
 python run.py \
-    --groupwise \
-    --num_keypoints 256 \
-    --variant S \
-    --weights_dir ./weights/ \
-    --moving ./example_data/ \
-    --fixed ./example_data/ \
-    --moving_seg ./example_data/ \
-    --fixed_seg ./example_data/ \
-    --list_of_aligns rigid affine tps_1 \
-    --list_of_metrics mse harddice \
-    --save_eval_to_disk \
-    --save_dir ./register_output/ \
-    --visualize \
-    --download
+    --jobname='embryo' \
+    --task_option='o' \
+    --targetname='phaseidx' \
+    --backbone_name='cnn_2D' \
+    --batchsize=64 \
+    --max_epoch=40 \
+    --output_directory='./output' \
+    --image_directory='./embryo_image_location' \
+    --image_size='224,224' \
+    --csv_file_train='./demo_for_release/demo_embryo_train.csv' \
+    --csv_file_val='./demo_for_release/demo_embryo_val.csv' \
+    --csv_file_test='./demo_for_release/demo_embryo_test.csv'
 ```
 ### Learning to temporally order wound-healing images (LILAC-o)
 ```bash
-python scripts/register.py \
-    --groupwise \
-    --num_keypoints 256 \
-    --variant S \
-    --weights_dir ./weights/ \
-    --moving ./example_data/ \
-    --fixed ./example_data/ \
-    --moving_seg ./example_data/ \
-    --fixed_seg ./example_data/ \
-    --list_of_aligns rigid affine tps_1 \
-    --list_of_metrics mse harddice \
-    --save_eval_to_disk \
-    --save_dir ./register_output/ \
-    --visualize \
-    --download
+python run.py \
+    --jobname='woundhealing' \
+    --task_option='o' \
+    --targetname='timepoint' \
+    --backbone_name='cnn_2D' \
+    --batchsize=128 \
+    --max_epoch=40 \
+    --output_directory='./output' \
+    --image_directory='./woundhealing_image_location' \
+    --image_size='224,224' \
+    --csv_file_train='./demo_for_release/demo_woundhealing_train.csv' \
+    --csv_file_val='./demo_for_release/demo_woundhealing_val.csv' \
+    --csv_file_test='./demo_for_release/demo_woundhealing_test.csv'
 ```
 ### Learning to predict temporal changes (LILAC-t)
 ```bash
-python scripts/register.py \
-    --groupwise \
-    --num_keypoints 256 \
-    --variant S \
-    --weights_dir ./weights/ \
-    --moving ./example_data/ \
-    --fixed ./example_data/ \
-    --moving_seg ./example_data/ \
-    --fixed_seg ./example_data/ \
-    --list_of_aligns rigid affine tps_1 \
-    --list_of_metrics mse harddice \
-    --save_eval_to_disk \
-    --save_dir ./register_output/ \
-    --visualize \
-    --download
+python run.py \
+    --jobname='oasis-aging' \
+    --task_option='t' \
+    --targetname='age' \
+    --backbone_name='cnn_3D' \
+    --batchsize=16 \
+    --max_epoch=100 \
+    --output_directory='./output' \
+    --image_directory='./oasis-aging_image_location' \
+    --image_size='128,128,128' \
+    --csv_file_train='./demo_for_release/demo_oasis-aging_train.csv' \
+    --csv_file_val='./demo_for_release/demo_oasis-aging_val.csv' \
+    --csv_file_test='./demo_for_release/demo_oasis-aging_test.csv'
 ```
 ### Learning to predict specific changes (LILAC-s)
 ```bash
-python scripts/register.py \
-    --groupwise \
-    --num_keypoints 256 \
-    --variant S \
-    --weights_dir ./weights/ \
-    --moving ./example_data/ \
-    --fixed ./example_data/ \
-    --moving_seg ./example_data/ \
-    --fixed_seg ./example_data/ \
-    --list_of_aligns rigid affine tps_1 \
-    --list_of_metrics mse harddice \
-    --save_eval_to_disk \
-    --save_dir ./register_output/ \
-    --visualize \
-    --download
+python run.py \
+    --jobname='adni-mci' \
+    --task_option='s' \
+    --targetname='CDRSB' \
+    --optional_meta='AGExSEX'\
+    --backbone_name='cnn_3D' \
+    --batchsize=16 \
+    --max_epoch=40 \
+    --output_directory='./output' \
+    --image_directory='./adni-mci_image_location' \
+    --image_size='128,128,128' \
+    --csv_file_train='./demo_for_release/demo_adni-mci_train.csv' \
+    --csv_file_val='./demo_for_release/demo_adni-mci_val.csv' \
+    --csv_file_test='./demo_for_release/demo_adni-mci_test.csv'
 ```
-
+### Inference
+Simply adding `--run_mode='eval'` will run inference on the testing set specified in the CSV file provided through `--csv_file_test=testset_list.csv`.
+For example, 
+```bash
+python run.py \
+    --jobname='adni-mci' \
+    --task_option='s' \
+    --targetname='CDRSB' \
+    --optional_meta='AGExSEX'\
+    --backbone_name='cnn_3D' \
+    --batchsize=16 \
+    --max_epoch=40 \
+    --output_directory='./output' \
+    --image_directory='./adni-mci_image_location' \
+    --image_size='128,128,128' \
+    --csv_file_train='./demo_for_release/demo_adni-mci_train.csv' \
+    --csv_file_val='./demo_for_release/demo_adni-mci_val.csv' \
+    --csv_file_test='./demo_for_release/demo_adni-mci_test.csv'
+    --run_mode='eval'
+```

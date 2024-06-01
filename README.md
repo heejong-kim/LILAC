@@ -4,10 +4,11 @@
 
 ## Overview
 
+**LILAC** is a model that learns to compare images, designed to automatically filter out 
+nuisance variations and focus on clinically significant changes in longitudinal imaging data.
+
 <img src="overview-github.png" alt="LILAC overview" width="800"/>
 
-LILAC is a method that learns to compare images, designed to automatically filter out 
-nuisance variations and focus on clinically significant changes in longitudinal imaging data.
 
 This repository includes models and train/evaluation code for the LILAC paper. 
 

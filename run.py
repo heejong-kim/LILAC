@@ -210,7 +210,7 @@ def test(network,opt):
 
         network.eval()
 
-        loader_test = torch.utils.data.DataLoader(args.loader_test,
+        loader_test = torch.utils.data.DataLoader(args.test_loader,
                                                   batch_size=opt.batchsize, shuffle=False, num_workers=opt.num_workers)
 
         tmp_stack_target = np.empty((0, 1))
@@ -221,7 +221,7 @@ def test(network,opt):
         # moved this to test subjectid key problem
         result = pd.DataFrame()
         result['subjectID'] = np.array(
-            loader_test.dataset.demo[subjectid].iloc[loader_test.dataset.index_combination[:, 0]])
+            loader_test.dataset.demo['subjectid'].iloc[loader_test.dataset.index_combination[:, 0]])
 
         for teststep, batch in enumerate(loader_test):
             sys.stdout.write(

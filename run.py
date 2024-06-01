@@ -425,28 +425,3 @@ if __name__ == "__main__":
         print(' ----------------- Training initiated -----------------')
         train(model, args)
 
-'''
-
-    ## mci w/ meta "adni-mci"
-    args.batchsize = 4
-    args.max_epoch = 1
-    args.num_workers = 8
-    args.lr = 0.001
-    args.backbone_name = 'cnn_3D'
-    args.image_directory = '/scratch/datasets/hk672/adni-all-3d-preprocessed/image'
-    args.task_option = 's'
-    args.output_directory = 'output'
-    args.optional_meta = 'AGExSEX'
-    args.jobname = 'mci-cdrsb'
-    args.targetname = 'CDRSB'
-    args.image_channel = 1
-    args.image_size = "128, 128, 128"
-    args.csv_file_train = '/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/tmp-train'
-    args.csv_file_val = '/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/tmp-val'
-    args.csv_file_test = '/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/tmp-test'
-    run_setup(args)
-    
-    
-    python run.py --jobname='adni-mci' --batchsize=16 --max_epoch=2 --targetname='CDRSB' --backbone_name='cnn_3D' --task_option='s' --output_directory='output' --image_directory='/scratch/datasets/hk672/adni-all-3d-preprocessed/image' --image_size='128,128,128' --csv_file_train='/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/tmp-train' --csv_file_val='/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/tmp-val' --csv_file_test='/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/tmp-test' --optional_meta="AGExSEX"
-    python run.py --jobname='adni-mci' --batchsize=16 --max_epoch=2 --targetname='CDRSB' --backbone_name='cnn_3D' --task_option='s' --output_directory='output' --image_directory='/scratch/datasets/hk672/adni-all-3d-preprocessed/image' --image_size='128,128,128' --csv_file_train='/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/tmp-train' --csv_file_val='/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/tmp-val' --csv_file_test='/home/hk672/learning-to-compare-longitudinal-images-3d/demo_for_release/tmp-test' --optional_meta="AGExSEX,AGExSEX"
-'''

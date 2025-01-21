@@ -23,6 +23,28 @@ def train(network, opt):
     os.makedirs(f"{opt.output_fullname}/", exist_ok=True)
     if parallel:
         network = nn.DataParallel(network).to(device)
+        if opt.pretrained_weight:
+            pretrained_filename = opt.output_fullname.split('/')[-1] + '.pth'
+            pretrained_dir = os.path.join(opt.output_fullname, '../model_weights')
+            pretrained_path = os.path.join(pretrained_dir, pretrained_filename)
+            assert os.path.exists(pretrained_path), "Pretrained weight does not exist. Please check."
+            network.load_state_dict(torch.load(pretrained_path))
+            print("Model is using pretrained weights from the paper")
+    else:
+        if opt.pretrained_weight:
+            pretrained_filename = opt.output_fullname.split('/')[-1] + '.pth'
+            pretrained_dir = os.path.join(opt.output_fullname, '../model_weights')
+            pretrained_path = os.path.join(pretrained_dir, pretrained_filename)
+            assert os.path.exists(pretrained_path), "Pretrained weight does not exist. Please check."
+            state_dict = torch.load(pretrained_path)
+            # remap to handle w/o DataParallel:  a new state_dict by removing 'module.' prefix
+            new_state_dict = {}
+            for key in state_dict.keys():
+                if key.startswith("module."):
+                    new_key = key.replace('module.', '')  # Remove 'module.' from the keys
+                new_state_dict[new_key] = state_dict[key]
+            print("Model is using pretrained weights from the paper")
+        network = network.cuda()
 
     if opt.epoch > 0:
         if len(glob.glob(f"{opt.output_fullname}/epoch{opt.epoch - 1}*.pth")) > 0:
@@ -209,11 +231,40 @@ def test(network,opt, overwrite = False):
 
         if parallel:
             network = nn.DataParallel(network).to(device)
-            network.load_state_dict(torch.load(savedmodelname))
+            if opt.pretrained_weight:
+                pretrained_filename = opt.output_fullname.split('/')[-1] + '.pth'
+                pretrained_dir = os.path.join(opt.output_fullname, '../model_weights')
+                pretrained_path = os.path.join(pretrained_dir, pretrained_filename)
+                assert os.path.exists(pretrained_path), "Pretrained weight does not exist. Please check."
+                network.load_state_dict(torch.load(pretrained_path))
+                print("Model is using pretrained weights from the paper")
+            else:
+                network.load_state_dict(torch.load(savedmodelname))
+                print("Model is using pretrained weights from the paper")
         else:
-            network.load_state_dict(torch.load(savedmodelname))
+            if opt.pretrained_weight:
+                pretrained_filename = opt.output_fullname.split('/')[-1] + '.pth'
+                pretrained_dir = os.path.join(opt.output_fullname, '../model_weights')
+                pretrained_path = os.path.join(pretrained_dir, pretrained_filename)
+                assert os.path.exists(pretrained_path), "Pretrained weight does not exist. Please check."
+                state_dict = torch.load(pretrained_path)
+                # remap to handle w/o DataParallel:  a new state_dict by removing 'module.' prefix
+                new_state_dict = {}
+                for key in state_dict.keys():
+                    if key.startswith("module."):
+                        new_key = key.replace('module.', '')  # Remove 'module.' from the keys
+
+                    new_state_dict[new_key] = state_dict[key]
+
+                # Load the updated state_dict into your model
+                network.load_state_dict(new_state_dict)
+                print("Model is using pretrained weights from the paper")
+            else:
+                network.load_state_dict(torch.load(savedmodelname))
+
             if cuda:
                 network = network.cuda()
+
 
         network.eval()
 
@@ -326,6 +377,7 @@ def parse_args():
                         help="implemented models: cnn_3D, cnn_2D, resnet50_2D, resnet18_2D")
 
     parser.add_argument('--run_mode', default='train', choices=['train', 'eval'], help="select mode")  # required=True,
+    parser.add_argument('--pretrained_weight', default=False, action='store_true')
 
     args = parser.parse_args()
 

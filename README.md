@@ -24,6 +24,10 @@ cd lilac
 conda create -n lilac python pip 
 conda activate lilac
 pip install -e .
+
+# If you would like to obtain the trained model weights described in the paper:
+wget https://zenodo.org/records/14713287/files/lilac_model_weights.tar.gz
+tar -xvzf ./lilac_model_weights.tar.gz
 ```
 
 ### Requirements
@@ -37,7 +41,6 @@ The LILAC package depends on the following requirements:
 - tensorboard
 
 Running `pip install -e .` will automatically check for and install all of these requirements.
-
 
 All baseline experiments in the paper were run on Python 3.9.7 and CUDA 11.2.
 
@@ -116,7 +119,7 @@ python run.py \
     --jobname='adni-mci' \
     --task_option='s' \
     --targetname='CDRSB' \
-    --optional_meta='AGExSEX'\
+    --optional_meta='AGExSEX' \
     --backbone_name='cnn_3D' \
     --batchsize=16 \
     --max_epoch=40 \

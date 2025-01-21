@@ -128,7 +128,9 @@ python run.py \
     --image_size='128,128,128' \
     --csv_file_train='./demo_for_release/demo_adni-mci_train.csv' \
     --csv_file_val='./demo_for_release/demo_adni-mci_val.csv' \
-    --csv_file_test='./demo_for_release/demo_adni-mci_test.csv'
-    --run_mode='eval'
+    --csv_file_test='./demo_for_release/demo_adni-mci_test.csv' \
+    --run_mode='eval' \
+    # --pretrained_weight ## uncomment this flag if you want to use pretrained weights
+  
 ```
 All *.csv files above are available in ./demo_for_release.

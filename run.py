@@ -27,7 +27,8 @@ def train(network, opt):
             pretrained_filename = opt.output_fullname.split('/')[-1] + '.pth'
             pretrained_dir = os.path.join(opt.output_fullname, '../model_weights')
             pretrained_path = os.path.join(pretrained_dir, pretrained_filename)
-            assert os.path.exists(pretrained_path), "Pretrained weight does not exist. Please check."
+            assert os.path.exists(pretrained_path), "Pretrained weight does not exist. Please check. \n" \
+                                                    "Download: wget https://zenodo.org/records/14713287/files/lilac_model_weights.tar.gz"
             network.load_state_dict(torch.load(pretrained_path))
             print("Model is using pretrained weights from the paper")
     else:
@@ -35,7 +36,8 @@ def train(network, opt):
             pretrained_filename = opt.output_fullname.split('/')[-1] + '.pth'
             pretrained_dir = os.path.join(opt.output_fullname, '../model_weights')
             pretrained_path = os.path.join(pretrained_dir, pretrained_filename)
-            assert os.path.exists(pretrained_path), "Pretrained weight does not exist. Please check."
+            assert os.path.exists(pretrained_path), "Pretrained weight does not exist. Please check.\n" \
+                                                    "Download: wget https://zenodo.org/records/14713287/files/lilac_model_weights.tar.gz"
             state_dict = torch.load(pretrained_path)
             # remap to handle w/o DataParallel:  a new state_dict by removing 'module.' prefix
             new_state_dict = {}
@@ -235,7 +237,8 @@ def test(network,opt, overwrite = False):
                 pretrained_filename = opt.output_fullname.split('/')[-1] + '.pth'
                 pretrained_dir = os.path.join(opt.output_fullname, '../model_weights')
                 pretrained_path = os.path.join(pretrained_dir, pretrained_filename)
-                assert os.path.exists(pretrained_path), "Pretrained weight does not exist. Please check."
+                assert os.path.exists(pretrained_path), "Pretrained weight does not exist. Please check.\n" \
+                                                    "Download: wget https://zenodo.org/records/14713287/files/lilac_model_weights.tar.gz"
                 network.load_state_dict(torch.load(pretrained_path))
                 print("Model is using pretrained weights from the paper")
             else:
@@ -246,7 +249,8 @@ def test(network,opt, overwrite = False):
                 pretrained_filename = opt.output_fullname.split('/')[-1] + '.pth'
                 pretrained_dir = os.path.join(opt.output_fullname, '../model_weights')
                 pretrained_path = os.path.join(pretrained_dir, pretrained_filename)
-                assert os.path.exists(pretrained_path), "Pretrained weight does not exist. Please check."
+                assert os.path.exists(pretrained_path), "Pretrained weight does not exist. Please check.\n" \
+                                                    "Download: wget https://zenodo.org/records/14713287/files/lilac_model_weights.tar.gz"
                 state_dict = torch.load(pretrained_path)
                 # remap to handle w/o DataParallel:  a new state_dict by removing 'module.' prefix
                 new_state_dict = {}

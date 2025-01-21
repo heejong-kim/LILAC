@@ -204,6 +204,7 @@ def test(network,opt, overwrite = False):
     run = False
     resultfilename = os.path.join(f'' + opt.output_fullname, f'{resultname}.csv')
     if os.path.exists(resultfilename):
+        print(f"result exists: {resultfilename}")
 
         result = pd.read_csv(resultfilename)
         target_diff = np.array(result['target'])

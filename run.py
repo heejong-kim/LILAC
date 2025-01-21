@@ -25,7 +25,7 @@ def train(network, opt):
         network = nn.DataParallel(network).to(device)
         if opt.pretrained_weight:
             pretrained_filename = opt.output_fullname.split('/')[-1] + '.pth'
-            pretrained_dir = os.path.join(opt.output_fullname, '../model_weights')
+            pretrained_dir = './model_weights'
             pretrained_path = os.path.join(pretrained_dir, pretrained_filename)
             assert os.path.exists(pretrained_path), "Pretrained weight does not exist. Please check. \n" \
                                                     "Download: wget https://zenodo.org/records/14713287/files/lilac_model_weights.tar.gz"
@@ -34,7 +34,7 @@ def train(network, opt):
     else:
         if opt.pretrained_weight:
             pretrained_filename = opt.output_fullname.split('/')[-1] + '.pth'
-            pretrained_dir = os.path.join(opt.output_fullname, '../model_weights')
+            pretrained_dir = './model_weights'
             pretrained_path = os.path.join(pretrained_dir, pretrained_filename)
             assert os.path.exists(pretrained_path), "Pretrained weight does not exist. Please check.\n" \
                                                     "Download: wget https://zenodo.org/records/14713287/files/lilac_model_weights.tar.gz"
@@ -235,7 +235,7 @@ def test(network,opt, overwrite = False):
             network = nn.DataParallel(network).to(device)
             if opt.pretrained_weight:
                 pretrained_filename = opt.output_fullname.split('/')[-1] + '.pth'
-                pretrained_dir = os.path.join(opt.output_fullname, '../model_weights')
+                pretrained_dir = './model_weights'
                 pretrained_path = os.path.join(pretrained_dir, pretrained_filename)
                 print(pretrained_path)
                 assert os.path.exists(pretrained_path), "Pretrained weight does not exist. Please check.\n" \
@@ -248,7 +248,7 @@ def test(network,opt, overwrite = False):
         else:
             if opt.pretrained_weight:
                 pretrained_filename = opt.output_fullname.split('/')[-1] + '.pth'
-                pretrained_dir = os.path.join(opt.output_fullname, '../model_weights')
+                pretrained_dir = './model_weights'
                 pretrained_path = os.path.join(pretrained_dir, pretrained_filename)
                 assert os.path.exists(pretrained_path), "Pretrained weight does not exist. Please check.\n" \
                                                     "Download: wget https://zenodo.org/records/14713287/files/lilac_model_weights.tar.gz"

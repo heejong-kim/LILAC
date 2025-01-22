@@ -1,12 +1,14 @@
 from torch.utils.data import Dataset
 import pandas as pd
 import os
-from PIL import Image
+from PIL import Image, ImageFile
 import torchvision.transforms as transforms
 from torchvision.transforms.functional import InterpolationMode
 import torch
 import torchio as tio
 import numpy as np
+
+ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 dict_transform = {'embryo': transforms.Compose([
     transforms.RandomApply(torch.nn.ModuleList(

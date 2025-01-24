@@ -483,3 +483,21 @@ if __name__ == "__main__":
         print(' ----------------- Training initiated -----------------')
         train(model, args)
 
+'''
+args.jobname='embryo'
+args.task_option='o'
+args.targetname='phaseidx'
+args.backbone_name='cnn_2D'
+args.batchsize=64 
+args.max_epoch=40 
+args.output_directory='./output'
+args.image_directory='/scratch/datasets/hk672/embryo/'
+args.image_size='224,224'
+args.csv_file_train='./demo_for_release/demo_embryo_train.csv'
+args.csv_file_val='./demo_for_release/demo_embryo_val.csv'
+args.csv_file_test='./demo_for_release/demo_embryo_test.csv'
+args.pretrained_weight = True
+args.run_mode = 'eval'
+
+
+'''

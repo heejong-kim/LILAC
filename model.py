@@ -6,7 +6,7 @@ class EncoderBlock3D(nn.Module):
     '''
     Modified from Encoder implementation of LNE project (https://github.com/ouyangjiahong/longitudinal-neighbourhood-embedding)
     '''
-    def __init__(self, in_num_ch, out_num_ch, kernel_size=3, conv_act='leaky_relu', dropout=0, pooling=nn.MaxPool3d):
+    def __init__(self, in_num_ch, out_num_ch, kernel_size=3, conv_act='leaky_relu', dropout=0, pooling=nn.AvgPool3d):
         super(EncoderBlock3D, self).__init__()
         if conv_act == 'relu':
             conv_act_layer = nn.ReLU(inplace=True)
@@ -35,7 +35,7 @@ class EncoderBlock3D(nn.Module):
         return self.conv(x)
 
 class Encoder3D(nn.Module):
-    def __init__(self, in_num_ch=1, num_block=4, inter_num_ch=16, kernel_size=3, conv_act='leaky_relu',  pooling=nn.MaxPool3d):
+    def __init__(self, in_num_ch=1, num_block=4, inter_num_ch=16, kernel_size=3, conv_act='leaky_relu',  pooling=nn.AvgPool3d):
         super(Encoder3D, self).__init__()
 
         conv_blocks = []
@@ -61,7 +61,7 @@ class EncoderBlock2D(nn.Module):
     '''
     LSSL implementation from longitudinal-neighbourhood-embedding
     '''
-    def __init__(self, in_num_ch, out_num_ch, kernel_size=3, conv_act='leaky_relu', dropout=0,  pooling=nn.MaxPool2d):
+    def __init__(self, in_num_ch, out_num_ch, kernel_size=3, conv_act='leaky_relu', dropout=0,  pooling=nn.AvgPool2d):
         super(EncoderBlock2D, self).__init__()
         if conv_act == 'relu':
             conv_act_layer = nn.ReLU(inplace=True)
@@ -92,7 +92,7 @@ class EncoderBlock2D(nn.Module):
         return self.conv(x)
 
 class Encoder2D(nn.Module):
-    def __init__(self, in_num_ch=1, num_block=4, inter_num_ch=16, kernel_size=3, conv_act='leaky_relu',  dropout=False, pooling=nn.MaxPool2d):
+    def __init__(self, in_num_ch=1, num_block=4, inter_num_ch=16, kernel_size=3, conv_act='leaky_relu',  dropout=False, pooling=nn.AvgPool2d):
         super(Encoder2D, self).__init__()
 
         dropoutlist = [0, 0.1, 0.2, 0]
@@ -122,7 +122,7 @@ class Encoder2D(nn.Module):
         return x
 
 class CNNbasic2D(nn.Module):
-    def __init__(self, inputsize=[64, 64], n_of_blocks=4, channels=3, initial_channel=16, pooling=nn.MaxPool2d, additional_feature=0):
+    def __init__(self, inputsize=[64, 64], n_of_blocks=4, channels=3, initial_channel=16, pooling=nn.AvgPool2d, additional_feature=0):
         super(CNNbasic2D, self).__init__()
 
         self.feature_image = (torch.tensor(inputsize) / (2**(n_of_blocks)))
@@ -160,6 +160,7 @@ def get_backbone(args=None):
     if backbone_name == 'cnn_3D':
         backbone = CNNbasic3D(inputsize=args.image_size, channels=args.image_channel, additional_feature = n_of_meta)
         linear = backbone.linear
+        del backbone.linear
         backbone.linear = nn.Identity()
     elif backbone_name == 'cnn_2D':
         backbone = CNNbasic2D(inputsize=args.image_size, channels=args.image_channel, additional_feature = n_of_meta)

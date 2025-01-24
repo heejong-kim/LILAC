@@ -214,7 +214,7 @@ def test(network,opt, overwrite = False):
             if dtm == 'auc' and args.task_option == 'o':
                 print(f'warning: {dtm.upper()} calculated only for binary pairs')
                 feature_diff_auc = sigmoid(torch.tensor(feature_diff)).numpy()
-                print(f'{dtm.upper()}:{dict_metric[dtm](target_diff[target_diff != 0.5], feature_diff_auc[target_diff != 0.5]):.3}')
+                print(f'{dtm.upper()}: {dict_metric[dtm](target_diff[target_diff != 0.5], feature_diff_auc[target_diff != 0.5]):.3}')
             else:
                 if dtm == 'loss':
                     print(f'{dtm.upper()}: {opt.loss(torch.tensor(feature_diff), torch.tensor(target_diff)).item():.3f}')
@@ -336,7 +336,7 @@ def test(network,opt, overwrite = False):
             if dtm == 'auc' and args.task_option == 'o':
                 print(f'warning: {dtm.upper()} calculated only for binary pairs')
                 feature_diff_auc = sigmoid(torch.tensor(feature_diff)).numpy()
-                print(f'{dtm.upper()}:{dict_metric[dtm](target_diff[target_diff != 0.5], feature_diff_auc[target_diff != 0.5]):.3}')
+                print(f'{dtm.upper()}: {dict_metric[dtm](target_diff[target_diff != 0.5], feature_diff_auc[target_diff != 0.5]):.3}')
             else:
                 if dtm == 'loss':
                     print(f'{dtm.upper()}: {opt.loss(torch.tensor(feature_diff), torch.tensor(target_diff)).item():.3f}')

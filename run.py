@@ -212,15 +212,14 @@ def test(network,opt, overwrite = False):
 
         for dtm in dict_task_metrics[args.task_option]:
             if dtm == 'auc' and args.task_option == 'o':
-                print(f'warning: {dtm} calculated only for binary pairs')
+                print(f'warning: {dtm.upper()} calculated only for binary pairs')
                 feature_diff_auc = sigmoid(torch.tensor(feature_diff)).numpy()
-                print(f'{dtm}:{dict_metric[dtm](target_diff[target_diff != 0.5], feature_diff_auc[target_diff != 0.5]):.3f}')
+                print(f'{dtm.upper()}:{dict_metric[dtm](target_diff[target_diff != 0.5], feature_diff_auc[target_diff != 0.5]):.3}')
             else:
                 if dtm == 'loss':
-                    print(f'{dtm}:{opt.loss(torch.tensor(feature_diff), torch.tensor(target_diff)).item():.3f}')
+                    print(f'{dtm.upper()}: {opt.loss(torch.tensor(feature_diff), torch.tensor(target_diff)).item():.3f}')
                 else:
-                    print(f'{dtm}:{dict_metric[dtm](target_diff, feature_diff):.3f}')
-
+                    print(f'{dtm.upper()}: {dict_metric[dtm](target_diff, feature_diff)}:.3f')
 
     if not os.path.exists(resultfilename) or overwrite:
         run = True
@@ -334,15 +333,15 @@ def test(network,opt, overwrite = False):
 
         print('\nSaved filename: ', resultfilename)
         for dtm in dict_task_metrics[args.task_option]:
-            if dtm == 'AUC' and args.task_option == 'o':
-                print(f'warning: {dtm} calculated only for binary pairs')
+            if dtm == 'auc' and args.task_option == 'o':
+                print(f'warning: {dtm.upper()} calculated only for binary pairs')
                 feature_diff_auc = sigmoid(torch.tensor(feature_diff)).numpy()
-                print(f'{dtm}:{dict_metric[dtm](target_diff[target_diff != 0.5], feature_diff_auc[target_diff != 0.5]):.3}')
+                print(f'{dtm.upper()}:{dict_metric[dtm](target_diff[target_diff != 0.5], feature_diff_auc[target_diff != 0.5]):.3}')
             else:
-                if dtm == 'Loss':
-                    print(f'{dtm}: {opt.loss(torch.tensor(feature_diff), torch.tensor(target_diff)).item():.3f}')
+                if dtm == 'loss':
+                    print(f'{dtm.upper()}: {opt.loss(torch.tensor(feature_diff), torch.tensor(target_diff)).item():.3f}')
                 else:
-                    print(f'{dtm}: {dict_metric[dtm](target_diff, feature_diff)}:.3f')
+                    print(f'{dtm.upper()}: {dict_metric[dtm](target_diff, feature_diff)}:.3f')
 
 
 def parse_args():
@@ -513,5 +512,40 @@ python run.py \
     --csv_file_test='./demo_for_release/demo_embryo_test.csv' \
     --run_mode='eval' \
     --pretrained_weight
+    
+    
+python run.py \
+    --jobname='woundhealing' \
+    --task_option='o' \
+    --targetname='timepoint' \
+    --backbone_name='cnn_2D' \
+    --batchsize=128 \
+    --max_epoch=40 \
+    --output_directory='./output' \
+    --image_directory='/scratch/datasets/hk672/woundhealing/data_preprocessed' \
+    --image_size='224,224' \
+    --csv_file_train='./demo_for_release/demo_woundhealing_train.csv' \
+    --csv_file_val='./demo_for_release/demo_woundhealing_val.csv' \
+    --csv_file_test='./demo_for_release/demo_woundhealing_test.csv' \
+    --run_mode='eval' \
+    --pretrained_weight
+    
+python run.py \
+    --jobname='oasis-aging' \
+    --task_option='t' \
+    --targetname='age' \
+    --backbone_name='cnn_3D' \
+    --batchsize=16 \
+    --max_epoch=100 \
+    --output_directory='./output' \
+    --image_directory='./oasis-aging_image_location' \
+    --image_size='128,128,128' \
+    --csv_file_train='./demo_for_release/demo_oasis-aging_train.csv' \
+    --csv_file_val='./demo_for_release/demo_oasis-aging_val.csv' \
+    --csv_file_test='./demo_for_release/demo_oasis-aging_test.csv' \
+    --run_mode='eval' \
+    --pretrained_weight
+
+
     
 '''

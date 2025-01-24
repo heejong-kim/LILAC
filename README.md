@@ -133,4 +133,7 @@ python run.py \
     # --pretrained_weight ## uncomment this flag if you want to use pretrained weights
   
 ```
+
+Refer to `./script-to-replicate-paper-results.sh` to run the evaluation on pre-trained weights.
 All *.csv files above are available in ./demo_for_release.
+

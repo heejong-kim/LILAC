@@ -97,7 +97,7 @@ def train(network, opt):
                 input2, target2 = I2
                 predicted = network(input2.type(Tensor), input1.type(Tensor))
 
-            targetdiff = torch.tensor(target2 - target1)[:, None].type(Tensor)
+            targetdiff = (target2 - target1)[:, None].type(Tensor)
             if opt.task_option == 'o':
                 targetdiff[targetdiff > 0] = 1
                 targetdiff[targetdiff == 0] = 0.5
@@ -155,7 +155,7 @@ def train(network, opt):
                     input2, target2 = I2
                     predicted = network(input2.type(Tensor), input1.type(Tensor))
 
-                targetdiff = torch.tensor(target2 - target1)[:, None].type(Tensor)
+                targetdiff = (target2 - target1)[:, None].type(Tensor)
                 if opt.task_option == 'o':
                     targetdiff[targetdiff > 0] = 1
                     targetdiff[targetdiff == 0] = 0.5
@@ -308,7 +308,7 @@ def test(network,opt, overwrite = False):
                 input2, target2 = I2
                 predicted = network(input2.type(Tensor), input1.type(Tensor))
 
-            targetdiff = torch.tensor(target2 - target1)[:, None].type(Tensor)
+            targetdiff = (target2 - target1)[:, None].type(Tensor)
             if opt.task_option == 'o':
                 targetdiff[targetdiff > 0] = 1
                 targetdiff[targetdiff == 0] = 0.5
@@ -499,5 +499,20 @@ args.csv_file_test='./demo_for_release/demo_embryo_test.csv'
 args.pretrained_weight = True
 args.run_mode = 'eval'
 
-
+python run.py \
+    --jobname='embryo' \
+    --task_option='o' \
+    --targetname='phaseidx' \
+    --backbone_name='cnn_2D' \
+    --batchsize=64 \
+    --max_epoch=40 \
+    --output_directory='./output' \
+    --image_directory='/scratch/datasets/hk672/embryo/' \
+    --image_size='224,224' \
+    --csv_file_train='./demo_for_release/demo_embryo_train.csv' \
+    --csv_file_val='./demo_for_release/demo_embryo_val.csv' \
+    --csv_file_test='./demo_for_release/demo_embryo_test.csv' \
+    --run_mode='eval' \
+    --pretrained_weight
+    
 '''

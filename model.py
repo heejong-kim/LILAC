@@ -160,7 +160,6 @@ def get_backbone(args=None):
     if backbone_name == 'cnn_3D':
         backbone = CNNbasic3D(inputsize=args.image_size, channels=args.image_channel, additional_feature = n_of_meta)
         linear = backbone.linear
-        del backbone.linear
         backbone.linear = nn.Identity()
     elif backbone_name == 'cnn_2D':
         backbone = CNNbasic2D(inputsize=args.image_size, channels=args.image_channel, additional_feature = n_of_meta)

@@ -103,7 +103,7 @@ def train(network, opt):
                 targetdiff[targetdiff == 0] = 0.5
                 targetdiff[targetdiff < 0] = 0
 
-            # Loss MSE
+            # Loss
             optimizer.zero_grad()
             loss = args.loss(predicted, targetdiff)
             loss.backward()
@@ -219,7 +219,7 @@ def test(network,opt, overwrite = False):
                 if dtm == 'loss':
                     print(f'{dtm.upper()}: {opt.loss(torch.tensor(feature_diff), torch.tensor(target_diff)).item():.3f}')
                 else:
-                    print(f'{dtm.upper()}: {dict_metric[dtm](target_diff, feature_diff)}:.3f')
+                    print(f'{dtm.upper()}: {dict_metric[dtm](target_diff, feature_diff):.3f}')
 
     if not os.path.exists(resultfilename) or overwrite:
         run = True
@@ -530,6 +530,7 @@ python run.py \
     --run_mode='eval' \
     --pretrained_weight
     
+
 python run.py \
     --jobname='oasis-aging' \
     --task_option='t' \
@@ -538,7 +539,7 @@ python run.py \
     --batchsize=16 \
     --max_epoch=100 \
     --output_directory='./output' \
-    --image_directory='./oasis-aging_image_location' \
+    --image_directory='/share/sablab/nfs04/data/OASIS3/npp-preprocessed/image/' \
     --image_size='128,128,128' \
     --csv_file_train='./demo_for_release/demo_oasis-aging_train.csv' \
     --csv_file_val='./demo_for_release/demo_oasis-aging_val.csv' \
@@ -547,5 +548,23 @@ python run.py \
     --pretrained_weight
 
 
+python run.py \
+    --jobname='adni-mci' \
+    --task_option='s' \
+    --targetname='CDRSB' \
+    --optional_meta='AGExSEX'\
+    --backbone_name='cnn_3D' \
+    --batchsize=16 \
+    --max_epoch=40 \
+    --output_directory='./output' \
+    --image_directory='./adni-mci_image_location' \
+    --image_size='128,128,128' \
+    --csv_file_train='./demo_for_release/demo_adni-mci_train.csv' \
+    --csv_file_val='./demo_for_release/demo_adni-mci_val.csv' \
+    --csv_file_test='./demo_for_release/demo_adni-mci_test.csv' \
+    --run_mode='eval' \
+    --pretrained_weight
+    
+    
     
 '''

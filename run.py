@@ -226,7 +226,6 @@ def test(network,opt, overwrite = False):
         run = True
 
     if run:
-        print('Loading ', resultname)
         cuda = True
         parallel = True
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -333,7 +332,7 @@ def test(network,opt, overwrite = False):
         target_diff = np.array(result['target'])
         feature_diff = np.array(result['predicted'])
 
-        print('Saved filename ', resultname)
+        print('\nSaved filename: ', resultfilename)
         for dtm in dict_task_metrics[args.task_option]:
             if dtm == 'auc' and args.task_option == 'o':
                 print(f'warning: {dtm} calculated only for binary pairs')

@@ -33,6 +33,7 @@ setup(
         "numpy >= 1.21.2",
         "tensorboard",
         "torchio >= 0.18.73",
+        "scikit-learn",
     ],
     license="Apache",
     packages=find_packages(

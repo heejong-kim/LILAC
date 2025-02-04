@@ -350,7 +350,7 @@ def parse_args():
 
     parser.add_argument('--lr', default=0.001, type=float)
     parser.add_argument('--seed', default=0, type=int)
-    parser.add_argument('--num_workers', default=8, type=int)
+    parser.add_argument('--num_workers', default=0, type=int)
 
     parser.add_argument('--earlystopping', default=10, type=int, help="early stopping criterion")
     parser.add_argument('--batchsize', default=16, type=int)

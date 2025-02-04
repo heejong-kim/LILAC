@@ -38,6 +38,7 @@ The LILAC package depends on the following requirements:
 - pillow>=8.4.0
 - numpy>=1.21.2
 - tensorboard
+- scikit-learn
 
 Running `pip install -e .` will automatically check for and install all of these requirements.
 

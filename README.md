@@ -11,7 +11,7 @@ nuisance variations and focus on clinically significant changes in longitudinal 
 
 This repository includes models and train/evaluation code for the LILAC paper. 
 
-For more information, please read the PNAS paper (in-print, 2025). 
+For more information, please read the [PNAS paper](https://www.pnas.org/doi/10.1073/pnas.2411492122). 
 For questions and feedback, please [open issues](https://github.com/heejong-kim/lilac/issues) or email the [corresponding author](https://heejongkim.com).
 
 

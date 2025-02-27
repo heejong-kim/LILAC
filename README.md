@@ -137,3 +137,18 @@ python run.py \
 Refer to `./script-to-replicate-paper-results.sh` to run the evaluation on pre-trained weights.
 All *.csv files above are available in ./demo_for_release.
 
+
+## Citation
+If you use this code, please consider citing our work:
+```
+@article{kim2025learning,
+  title={Learning-based inference of longitudinal image changes: Applications in embryo development, wound healing, and aging brain},
+  author={Kim, Heejong and Karaman, Batuhan K and Zhao, Qingyu and Wang, Alan Q and Sabuncu, Mert R and Alzheimer’s Disease Neuroimaging Initiative},
+  journal={Proceedings of the National Academy of Sciences},
+  volume={122},
+  number={8},
+  pages={e2411492122},
+  year={2025},
+  publisher={National Academy of Sciences}
+}
+```

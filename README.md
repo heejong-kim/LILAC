@@ -14,17 +14,6 @@ This repository includes models and train/evaluation code for the LILAC paper.
 For more information, please read the [PNAS paper](https://www.pnas.org/doi/10.1073/pnas.2411492122). 
 For questions and feedback, please [open issues](https://github.com/heejong-kim/lilac/issues) or email the [corresponding author](https://heejongkim.com).
 
-## Updates
-- [February 2026] Added updates from MR-Linac study ["AI-Based Detection of In-Treatment Changes from Prostate MR-Linac Images"](https://arxiv.org/abs/2602.04983). The study originated from this repository. Refer to `./script-for-mrlinac.sh` to replicate the result.
-    - Added ResNet18-3D.
-    - Added learning rate scheduler.
-    - Added get_score function.
-    - Added Grad-CAM.
-    - Added path_pretrained_model argument for transfer learning.
-    - Added csv files for the study to demo_for_release (mrlinac_linac__train.csv, mrlinac_linac__val.csv, mrlinac_linac__test.csv).
-    - Added a script file for the study (script-for-mrlinac.sh).
-    - Added matplotlib and opencv-python.
-
 ## Installation
 ```bash
 git clone https://github.com/heejong-kim/lilac.git
@@ -165,3 +154,30 @@ If you use this code, please consider citing our work:
 }
 ```
 
+## LILAC for Prostate MR-Linac Imaging
+LILAC is used for prostate MR-Linac imaging in the paper titled "AI-Based Detection of Temporal Changes in MR‑Linac Images Acquired During Routine Prostate Radiotherapy" (https://arxiv.org/abs/2602.04983).
+
+<img src="overview_mrlinac-github.png" alt="MRLINAC overview" width="800"/>
+
+### Model weights
+```bash
+# If you would like to obtain the trained model weights described in the paper:
+wget https://zenodo.org/records/19671749/files/model_f1fl.pth # F1-FL model
+wget https://zenodo.org/records/19671749/files/model_allpair.pth # All-pair model
+
+```
+
+### Script for training and test
+Script for training and test is [here](https://github.com/heejong-kim/LILAC/blob/main/script-for-mrlinac.sh).
+
+## Updates
+- [February 2026] Added updates from MR-Linac study ["AI-Based Detection of In-Treatment Changes from Prostate MR-Linac Images"](https://arxiv.org/abs/2602.04983). The study originated from this repository. Refer to `./script-for-mrlinac.sh` to replicate the result.
+    - Added ResNet18-3D.
+    - Added learning rate scheduler.
+    - Added get_score function.
+    - Added Grad-CAM.
+    - Added path_pretrained_model argument for transfer learning.
+    - Added csv files for the study to demo_for_release (mrlinac_linac__train.csv, mrlinac_linac__val.csv, mrlinac_linac__test.csv).
+    - Added a script file for the study (script-for-mrlinac.sh).
+    - Added matplotlib and opencv-python.
+- [April 2026] Added LILAC for Prostate MR-Linac Imaging

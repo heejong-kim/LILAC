@@ -155,7 +155,11 @@ If you use this code, please consider citing our work:
 ```
 
 ## LILAC for Prostate MR-Linac Imaging
-LILAC is used for prostate MR-Linac imaging in the paper titled "AI-Based Detection of Temporal Changes in MR‑Linac Images Acquired During Routine Prostate Radiotherapy" (https://arxiv.org/abs/2602.04983).
+LILAC was applied to prostate MR-Linac imaging to detect temporal changes during radiotherapy, as described in the paper:
+
+
+Park, S., Wang, P., Paik, J., Pennell, R., Khani, F., Nagar, H., McClure, T., Weg, E. S., Sabuncu, M. R., Margolis, D., & Kim, H. (2026). AI-based detection of temporal changes in MR-Linac images acquired during routine prostate radiotherapy. *Physics and Imaging in Radiation Oncology, 41*, 101081. https://doi.org/10.1016/j.phro.2026.101081 
+
 
 <img src="overview_mrlinac-github.png" alt="MRLINAC overview" width="800"/>
 
@@ -170,8 +174,22 @@ wget https://zenodo.org/records/19671749/files/model_allpair.pth # All-pair mode
 ### Script for training and test
 Script for training and test is [here](https://github.com/heejong-kim/LILAC/blob/main/script-for-mrlinac.sh).
 
+### Citation
+```
+@article{park2026mr_linac,
+  title   = {AI-based detection of temporal changes in {MR-Linac} images acquired during routine prostate radiotherapy},
+  author  = {Park, Seungbin and Wang, Peilin and Paik, Joshua and Pennell, Ryan and Khani, Francesca and Nagar, Himanshu and McClure, Timothy and Weg, Emily S. and Sabuncu, Mert R. and Margolis, Daniel and Kim, Heejong},
+  journal = {Physics and Imaging in Radiation Oncology},
+  volume  = {41},
+  pages   = {101081},
+  year    = {2026},
+  doi     = {10.1016/j.phro.2026.101081},
+  url     = {https://doi.org/10.1016/j.phro.2026.101081}
+}
+```
+
 ## Updates
-- [February 2026] Added updates from MR-Linac study ["AI-Based Detection of In-Treatment Changes from Prostate MR-Linac Images"](https://arxiv.org/abs/2602.04983). The study originated from this repository. Refer to `./script-for-mrlinac.sh` to replicate the result.
+- [2026-02] Added updates from MR-Linac study ["AI-Based Detection of In-Treatment Changes from Prostate MR-Linac Images"](https://arxiv.org/abs/2602.04983). The study originated from this repository. Refer to `./script-for-mrlinac.sh` to replicate the result.
     - Added ResNet18-3D.
     - Added learning rate scheduler.
     - Added get_score function.
@@ -180,4 +198,5 @@ Script for training and test is [here](https://github.com/heejong-kim/LILAC/blob
     - Added csv files for the study to demo_for_release (mrlinac_linac__train.csv, mrlinac_linac__val.csv, mrlinac_linac__test.csv).
     - Added a script file for the study (script-for-mrlinac.sh).
     - Added matplotlib and opencv-python.
-- [April 2026] Added LILAC for Prostate MR-Linac Imaging
+- [2026-04] Added LILAC for Prostate MR-Linac Imaging.
+- [2026-09-30] Added the published MR-Linac paper and citation to the README.
